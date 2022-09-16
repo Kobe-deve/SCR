@@ -15,7 +15,7 @@ Window::Window()
 		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
 				
 		// create window 
-		window = SDL_CreateWindow( "Graphics", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		window = SDL_CreateWindow( "Stone Crawler PLUS", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 		if(window != NULL)
 		{
 			// creates renderer
