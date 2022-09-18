@@ -524,3 +524,48 @@ class Window
 		int frames = 0; // frame counter
 		double avgFPS; // the average FPS calculated throughout the window operation
 };
+
+// class layout for subsystems
+class system_handler
+{
+	public:
+		// constructor
+		system_handler(){};
+		
+		// displaying the game system
+		virtual void display(){};
+	
+		// handle the game system 
+		virtual void handler(){};
+		
+		// for calling another system 
+		virtual void callSystem(){};
+		
+		// deallocate memory 
+		virtual void deallocate(){};
+		
+		bool systemEnd = false;
+	protected:
+		
+		// the game system that the game is currently handling 
+		Window * gameWindow;
+};
+
+class dungeon : public system_handler
+{
+	public:
+		dungeon(){}
+};
+
+class battle : public system_handler
+{
+	public:
+		battle(){}
+		battle(game_handler * g){}
+};
+
+class title_screen : public system_handler
+{
+	public:
+		title_screen(){}
+};
