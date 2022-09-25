@@ -1,3 +1,6 @@
+#define CHARACTER_HANDLED
+
+
 // for holding basic stats that are used in combat
 enum move_types
 {
@@ -6,7 +9,8 @@ enum move_types
 	BLUDGEON = 3,
 	RANGED = 4,
 	SPELL = 5,
-	STRATEGIES = 6
+	STRATEGIES = 6,
+	DEMON_ABILITY = 7
 };
 
 // different characters
@@ -41,12 +45,12 @@ struct moves
 	string name;
 };
 
-class stats 
+class character_stats 
 {
 	public:
-		stats(){}
+		character_stats(){}
 		
-		stats(SDL_Renderer * g, race pick)
+		character_stats(SDL_Renderer * g, race pick)
 		{
 			type = pick;
 			abilities = new moves[4];
@@ -70,7 +74,7 @@ class stats
 				
 				portCoords[0] = 67;
 				portCoords[1] = 226;
-				sprite = image("resources/sprites/Monster/kid.png",g);
+				//sprite = image("resources/sprites/Monster/kid.png",g);
 				
 				abilities[0] = {SLASH, "Slash"};
 				abilities[1] = {PIERCE, "Pierce"};
@@ -97,7 +101,7 @@ class stats
 				
 				portCoords[0] = 20;
 				portCoords[1] = 33;
-				sprite = image("resources/sprites/Monster/Cobol.png",g);
+				//sprite = image("resources///sprites/Monster/Cobol.png",g);
 				
 				abilities[0] = {SLASH, "Slash"};
 				
@@ -121,7 +125,7 @@ class stats
 				
 				portCoords[0] = 33;
 				portCoords[1] = 93;
-				sprite = image("resources/sprites/Monster/Tinker Toy.png",g);
+				//sprite = image("resources///sprites/Monster/Tinker Toy.png",g);
 				
 				abilities[0] = {SPELL, "Spirit"};
 				
@@ -145,7 +149,7 @@ class stats
 				
 				portCoords[0] = 93;
 				portCoords[1] = 123;
-				sprite = image("resources/sprites/Monster/Loating.png",g);
+				//sprite = image("resources///sprites/Monster/Loating.png",g);
 				
 				abilities[0] = {SPELL, "Spirit"};
 				
@@ -169,7 +173,7 @@ class stats
 				
 				portCoords[0] = 123;
 				portCoords[1] = 63;
-				sprite = image("resources/sprites/Monster/Traotic.png",g);
+				//sprite = image("resources///sprites/Monster/Traotic.png",g);
 				
 				abilities[0] = {SPELL, "Spirit"};
 				abilities[1] = {SLASH, "Slash"};
@@ -193,7 +197,7 @@ class stats
 				
 				portCoords[0] = 0;
 				portCoords[1] = 0;
-				sprite = image("resources/sprites/Monster/stranjer.png",g);
+				//sprite = image("resources///sprites/Monster/stranjer.png",g);
 				
 				abilities[0] = {SPELL, "Spirit"};
 				abilities[1] = {SLASH, "Slash"};
@@ -210,20 +214,16 @@ class stats
 		// party portrait display 
 		void portraitDisplay(SDL_Renderer * g, int x, int y,bool bye = false)
 		{
-			if(!bye)
-				sprite.setAlpha(255);
-			SDL_Rect port = {portCoords[0],portCoords[1],130,130};
-			sprite.render(g,x,y,&port);
 		}
 		
 		// comparison for turn order
-		bool operator > (const stats &b) const
+		bool operator > (const character_stats &b) const
 		{
 			int Val = stamina*agility + health;
 			int bVal = b.stamina*b.agility + b.health;
 			return (Val > bVal);
 		}
-		bool operator < (const stats &b) const
+		bool operator < (const character_stats &b) const
 		{
 			int Val = stamina*agility + health;
 			int bVal = b.stamina*b.agility + b.health;
@@ -232,7 +232,7 @@ class stats
 		
 		string name = "";
 	
-		// character stats
+		// character character_stats
 		int strength = 1;
 		int defense = 1;
 		int agility = 1;
@@ -250,11 +250,11 @@ class stats
 		moves * abilities;
 		int numMoves;
 		
-		// used for identifying the sprite and starting stats of the character
+		// used for identifying the //sprite and starting character_stats of the character
 		race type;
 		
-		// the sprite of the character
-		image sprite;
+		// the //sprite of the character
+		//image sprite;
 	
 		int maxStr = 2;
 		int maxDef = 2;
@@ -275,14 +275,14 @@ class stats
 		// scars accumulated
 		int scars = 0;
 		
-		// position of sprite on the battle screen as an enemy 
-		int battleSpriteCoords[2];
+		// position of //sprite on the battle screen as an enemy 
+		int battlespriteCoords[2];
 		
 		// used in battle to keep track of enemy ai turns 
 		bool isEnemy = false;
 		
 		private:
-		// coordinates for the party portrait sprite 	
+		// coordinates for the party portrait //sprite 	
 		int portCoords[2];
 	
 };

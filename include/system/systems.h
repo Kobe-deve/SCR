@@ -185,6 +185,8 @@ class texture
 		{
 			SDL_SetTextureBlendMode(imageTexture, SDL_BLENDMODE_BLEND);
 			SDL_SetTextureAlphaMod(imageTexture, alph);
+			
+			color.a = alph;
 		}
 		
 		// for rendering images 
@@ -489,6 +491,87 @@ class input_handler
 		SDL_Event * e; // gets event inputs		
 };
 
+class text 
+{
+	public:		
+		text(){}
+		text(SDL_Renderer * r,int fontType=0,int paramSize=40);
+		
+		// loading text letters with specific textures 
+		void loadLetters();
+
+		// for displaying text 
+		void display(string t, int x=0, int y=0, double angle=0);
+		
+		int size = START_SIZE; // size of text 
+		SDL_Color textColor = {255,255,255,255}; // text color 
+		bool black = false; // does the text color just default to black?
+		
+	private:
+		int height; // size of each letter (heigth * width)
+		int width;
+		
+		// map of textures for letters, probably going to use a different data structure later (I hope)
+		map<char,SDL_Texture*> letters; 
+		
+		SDL_Renderer * renderer; // renderer being used 
+
+		SDL_Rect * renderQuad;
+		
+		string words;
+		TTF_Font *font = NULL; // font information 
+}; 
+
+// class for handling general text information displaying
+class textInfo
+{
+	public:
+		text displayText;
+		
+		textInfo(){};
+		textInfo(SDL_Renderer * g,int type = 0, int size=0);
+		
+		// start text timer
+		void startTextDisplay();
+		
+		// add line of dialogue 
+		void addLine(string s);
+		
+		// set current script to most recent 
+		void reset();
+		
+		// display text 
+		void display(int x, int y);
+		
+		// go to next line 
+		void continueText();
+		
+		void deallocate();
+		
+		// can the player input stuff now that the lines are done?
+		bool finishedLines = false;	
+		
+		// the text being displayed
+		vector<string> lines = vector<string>();
+		
+		// is the line being read done?
+		bool finishedLine = false;
+		
+		SDL_Renderer * target;
+		
+		// timer for keeping track of speed for displaying tex	t
+		timer texttimer; 
+		
+		// rate variable for showing characters 
+		int counter = 0;
+		
+		// current character in the string and the counter for what is displayed
+		int currentPos = 0;
+		
+		// current line being read
+		int currentScript = 0;	
+};
+
 // main game handler, general flow of the main game
 class Window
 {
@@ -525,6 +608,13 @@ class Window
 		double avgFPS; // the average FPS calculated throughout the window operation
 };
 
+
+// universal input handler 
+static input_handler input = input_handler();	
+
+// stats class used by characters in the game
+class character_stats;
+
 // class layout for subsystems
 class system_handler
 {
@@ -537,9 +627,6 @@ class system_handler
 	
 		// handle the game system 
 		virtual void handler(){};
-		
-		// for calling another system 
-		virtual void callSystem(){};
 		
 		// deallocate memory 
 		virtual void deallocate(){};
@@ -557,11 +644,79 @@ class dungeon : public system_handler
 		dungeon(){}
 };
 
+enum menuStat
+{
+	
+};
+
 class battle : public system_handler
 {
 	public:
 		battle(){}
-		battle(game_handler * g){}
+		battle(Window * g);
+		
+		// enemy AI actions
+		void enemyAI();
+		
+		// handling the turns in combat 
+		void turn_handler();
+		
+		// when the player selects a move for a party member 
+		void player_selection();
+		
+		void display() override;
+	
+		void handler() override;
+		
+		void deallocate() override;
+
+	private:
+		// handling variables 
+		
+			// enemy stats
+				character_stats * enemySide;
+				int numEnemies;
+			
+			// overall combat turn order 
+				vector<character_stats*> turnOrder;
+			
+			// target for commands/actions
+				character_stats * target;
+				int numTargets;
+				int selectedTarget;
+				
+				int calculatedDamage = 0;
+				
+				
+		// test variables 
+			int monsterType = 0;
+			bool switchMonster = false;		
+				
+		// assets used for UI
+
+				// enemy sprites
+				texture * enemy_sprites;
+				
+				// used for selecting enemy targets
+				texture cursor;
+				
+				// menu icons 
+				texture textBox;
+				
+				// background behind enemy sprites 
+				texture battleBackground;
+				
+				// menu command UI 
+				texture commandBox;
+				
+				// background for party status 
+				texture partyBackground;
+				
+				// buff/debuff icons 
+				texture buffs;
+				
+				// character status icons 
+				texture statusBar;
 };
 
 class title_screen : public system_handler
