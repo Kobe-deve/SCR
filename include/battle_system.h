@@ -69,13 +69,13 @@ void battle::handler()
 			monsterType++;
 		break;
 		case SELECT:
-		enemy_sprites->deallocate();
+		systemEnd = true;
 		break;
 	}
 };
 		
 void battle::deallocate() 
 {
-	
+	enemy_sprites->deallocate();	
 };
 

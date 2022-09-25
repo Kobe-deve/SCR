@@ -14,7 +14,7 @@ void gameLoop(Window * gameWindow)
 {
 	gameSystemMode currentSystem = BATTLE;
 	
-	battle b = battle(gameWindow);
+	battle * b = new battle(gameWindow);
 	
 	while(input.state != EXIT)
 	{
@@ -22,9 +22,30 @@ void gameLoop(Window * gameWindow)
 		
 		input.update();
 		
-		b.display();
-		b.handler();
-		
+		switch(currentSystem)
+		{
+			case BATTLE:
+			if(b->systemEnd)
+			{
+				b->deallocate();
+				b->systemEnd = false;
+				currentSystem = DUNGEON;
+				delete b;
+			}
+			else
+			{
+				b->display();
+				b->handler();
+			}
+			break;
+			default:
+			if(input.state == SELECT)
+			{
+				b = new battle(gameWindow);
+				currentSystem = BATTLE;
+			}
+			break;
+		}
 		
 		gameWindow->display();
 	}
