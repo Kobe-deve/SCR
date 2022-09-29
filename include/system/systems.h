@@ -24,7 +24,7 @@ using namespace std;
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 900;
-const int SCREEN_HEIGHT = 600;
+const int SCREEN_HEIGHT = 700;
 
 #define PI 3.14159256
 
@@ -202,7 +202,7 @@ class texture
 			}
 			
 			//Render to screen 
-			SDL_RenderCopyEx(gRenderer, imageTexture, clip, &renderQuad, angle, center, flip);
+			SDL_RenderCopyEx(gRenderer, imageTexture, clip, &renderQuad, angle, NULL, flip);
 		}
 		
 		void deallocate()
@@ -594,6 +594,9 @@ class Window
 		SDL_Renderer* renderer = NULL; // window renderer
 		
 		Uint8 colors[4] = {WHITE,0}; // background color of the window
+		
+		textInfo textHandler; // for displaying text 
+		
 	private:
 		// did the window load successfully?
 		bool success = false;
