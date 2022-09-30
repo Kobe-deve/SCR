@@ -690,6 +690,9 @@ class battle : public system_handler
 				
 				int calculatedDamage = 0;
 				
+			// selected action option
+				int menuOption = 0;
+				int maxOptions = 5;
 				
 		// test variables 
 			int monsterType = 0;
