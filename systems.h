@@ -1,3 +1,11 @@
+/*
+	Project Tear Engine
+	
+	Developed by Demi
+	9/16/2021 - 12/16/2021
+
+*/
+
 // SDL2 libraries 
 #define SDL_MAIN_HANDLED
 
@@ -14,6 +22,8 @@
 #include <SDL2/SDL_mixer.h>
 
 // windows handler
+#include <windows.h>
+#include <iostream>
 #include <map>
 #include <vector>
 #include <utility>
@@ -23,8 +33,8 @@
 using namespace std;
 
 //Screen dimension constants
-const int SCREEN_WIDTH = 900;
-const int SCREEN_HEIGHT = 700;
+const int SCREEN_WIDTH = 960;
+const int SCREEN_HEIGHT = 720;
 
 #define PI 3.14159256
 
@@ -73,7 +83,6 @@ class timer
 			startTicks = 0;
 			pauseTicks = 0;	
 		}
-		
 		// pausing timer to resume later 
 		void pause()
 		{
@@ -121,18 +130,131 @@ class timer
 // starting render font size of text
 #define START_SIZE 35
 
-// image class  
-class texture 
+// class for text handling 
+class text 
 {
 	public:
-		texture()
+		// loading text letters with specific textures 
+		void loadLetters()
 		{
-			center->x = 0;
-			center->y = 0;
+			SDL_Texture ** texture = new SDL_Texture * [127]; // holds texture of text 
+			string character = " ";
+			
+			// loads characters from value 29 to 125 
+			for(int i = 29;i<126;i++)
+			{
+				character[0] = char(i);
+				
+				SDL_Surface* textSurface = TTF_RenderUTF8_Blended(font, character.c_str(), textColor );
+				
+				if(textSurface == NULL)
+					printf( "Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError() );
+				else
+				{
+					//Create texture from surface pixels
+					texture[i] = SDL_CreateTextureFromSurface(renderer, textSurface );
+					
+					if(texture[i] == NULL )
+						printf( "Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError() );
+					else
+					{
+						width = textSurface->w;
+						height = textSurface->h;
+					}
+					
+					letters.insert(pair<char,SDL_Texture*>((char)i,texture[i]));
+					
+					//Get rid of old surface
+					SDL_FreeSurface( textSurface );
+				}
+			}
+		}
+		text(){}
+		text(SDL_Renderer * r,int type=0)
+		{
+			renderer = r;
+			switch(type)
+			{
+				case 1:
+				font = TTF_OpenFont("resources/fonts/Dotty.ttf",25);
+				break;
+				default:
+				font = TTF_OpenFont("resources/fonts/chiaro.ttf",START_SIZE);
+				break;
+			}
+			if(font == NULL)
+				cout << "Error with loading font!";
+			renderQuad = new SDL_Rect;
+			
+			loadLetters();
 		}
 		
+		// for displaying text 
+		void display(string t, int x=0, int y=0, double angle=0)
+		{
+			SDL_Rect renderQuad;
+			
+			// char used for getting parts of the t string 
+			char chara = ' ';
+			
+			for(int i=0;i<t.length();i++)
+			{
+				// render the text, changing the size if it's different from the default 
+				renderQuad = {x+(i*width*abs(size-(START_SIZE-1))), y, width*abs(size-(START_SIZE-1)), height*abs(size-(START_SIZE-1))};
+				
+				// set current character to a part of the string 
+				chara = t[i];
+				
+				// set text color 
+				if(black)
+					SDL_SetTextureColorMod(letters.at(chara), BLACK);
+				else
+					SDL_SetTextureColorMod(letters.at(chara), textColor.r, textColor.g, textColor.b);
+				
+				// present alpha and texture piece 
+				SDL_SetTextureAlphaMod(letters.at(chara), textColor.a);
+				SDL_RenderCopyEx(renderer, letters.at(chara), NULL, &renderQuad, angle,NULL,SDL_FLIP_NONE);
+			
+			}		
+		}
+
+		void deallocate()
+		{
+			for(int i = 29;i<126;i++)
+			{
+				SDL_DestroyTexture(letters[i]);
+			}
+		}
+
+		int size = START_SIZE; // size of text 
+		SDL_Color textColor = {255,255,255,255}; // text color 
+		bool black = false; // does the text color just default to black?
+		
+	private:
+		int height; // size of each letter (heigth * width)
+		int width;
+		
+		// map of textures for letters, probably going to use a different data structure later (I hope)
+		map<char,SDL_Texture*> letters; 
+		
+		SDL_Renderer * renderer; // renderer being used 
+		
+		SDL_Surface ** textSurface;
+		
+		SDL_Rect * renderQuad;
+		
+		string words;
+		TTF_Font *font = NULL; // font information 
+}; 
+
+// image class  
+class image 
+{
+	public:
+		image(){}
+		
 		// loads class by getting texture ready 
-		texture(string path, SDL_Renderer* gRenderer)
+		image(string path, SDL_Renderer* gRenderer)
 		{
 			//Load image at specified path
 			SDL_Surface* loadedSurface = IMG_Load( path.c_str() );
@@ -141,9 +263,9 @@ class texture
 			else
 			{
 				//Create texture from surface pixels
-				imageTexture = SDL_CreateTextureFromSurface( gRenderer, loadedSurface );
+				texture = SDL_CreateTextureFromSurface( gRenderer, loadedSurface );
 				
-				if( imageTexture == NULL )
+				if( texture == NULL )
 					printf( "Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
 				else
 				{
@@ -156,44 +278,29 @@ class texture
 			}
 		}
 		
-		// loads class through font format 
-		texture(int fontType, int paramSize=40)
-		{
-			
-			size = paramSize;
-			switch(fontType)
-			{
-				case 0:
-				font = TTF_OpenFont("resources/fonts/ARCADE.ttf",paramSize);
-				break;
-				default:
-				case 1:
-				font = TTF_OpenFont("resources/fonts/chiaro.ttf",paramSize);	
-				break;
-			}
-		}
-		
 		// changing color of the image 
 		void setColor( Uint8 red, Uint8 green, Uint8 blue ) // changes color value of image
 		{
 			//Modulate texture
-			SDL_SetTextureColorMod(imageTexture, red, green, blue );
+			SDL_SetTextureColorMod(texture, red, green, blue );
 		}
 		
 		// changing transparency of the image 
 		void setAlpha(Uint8 alph) // changes alpha value of image
 		{
-			SDL_SetTextureBlendMode(imageTexture, SDL_BLENDMODE_BLEND);
-			SDL_SetTextureAlphaMod(imageTexture, alph);
-			
-			color.a = alph;
+			SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+			SDL_SetTextureAlphaMod(texture, alph);
 		}
 		
 		// for rendering images 
-		void render(SDL_Renderer* gRenderer, int x, int y, SDL_Rect* clip=NULL) // displays an image, clip is a section of an image
+		void render(SDL_Renderer* gRenderer, int x, int y, SDL_Rect* clip=NULL, int extraA = 0) // displays an image, clip is a section of an image
 		{
+			int temp = angle;
 			//Set rendering space and render to screen
 			renderQuad = { x, y, width*scale, height*scale };
+			
+			if(extraA != 0)
+				angle = extraA;
 			
 			if(clip!=NULL)
 			{
@@ -202,36 +309,23 @@ class texture
 			}
 			
 			//Render to screen 
-			SDL_RenderCopyEx(gRenderer, imageTexture, clip, &renderQuad, angle, NULL, flip);
+			SDL_RenderCopyEx(gRenderer, texture, clip, &renderQuad, angle, center, flip);
+			angle = temp;
 		}
 		
 		void deallocate()
 		{
-			SDL_DestroyTexture(imageTexture);
-		}
-		
-		// for displaying text 
-		void createFontTexture(SDL_Renderer* gRenderer, string t)
-		{
-			SDL_Surface* textSurface = TTF_RenderUTF8_Blended(font, t.c_str(), color );
-			imageTexture = SDL_CreateTextureFromSurface(gRenderer, textSurface);
-			
-			width = textSurface->w;
-			height = textSurface->h;
-			SDL_FreeSurface(textSurface);
+			SDL_DestroyTexture(texture);
 		}
 		
 		// get texture
 		SDL_Texture * grabTexture()
 		{
-			return imageTexture;
+			return texture;
 		}
 		
 		// point of rotation 
-		SDL_Point * center= new SDL_Point;
-		
-		SDL_Renderer * renderer;
-		int size = 0;
+		SDL_Point * center=NULL;
 		
 		// flipping the image 
 		SDL_RendererFlip flip  = SDL_FLIP_NONE;
@@ -244,18 +338,21 @@ class texture
 		
 		int height; // height and width of an image
 		int width;
-		SDL_Color color = {255,255,255,255}; // text color 
-	protected:			
-		TTF_Font *font = NULL; // font information 
+	protected:
 		SDL_Rect renderQuad;
 		int x = 0; // coordinates
 		int y = 0;
 
-		SDL_Texture* imageTexture = nullptr; // holds image information
+		SDL_Texture* texture; // holds image information
 };
 
+
+/*
+	
+*/
+
 // animated objects class 
-class animatedAsset : public texture 
+class animatedAsset : public image 
 {
 	public:
 		animatedAsset(){};
@@ -276,9 +373,9 @@ class animatedAsset : public texture
 			else
 			{
 				//Create texture from surface pixels
-				imageTexture = SDL_CreateTextureFromSurface( gRenderer, loadedSurface );
+				texture = SDL_CreateTextureFromSurface( gRenderer, loadedSurface );
 				
-				if( imageTexture == NULL )
+				if( texture == NULL )
 					printf( "Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
 				else
 				{
@@ -301,7 +398,7 @@ class animatedAsset : public texture
 			renderQuad.h = camera.h*scale;	
 		
 			//Render to screen 
-			SDL_RenderCopyEx(r, imageTexture, &camera, &renderQuad, 0, center, flip);
+			SDL_RenderCopyEx(r, texture, &camera, &renderQuad, 0, center, flip);
 		}
 		
 		// update animation 
@@ -318,14 +415,17 @@ class animatedAsset : public texture
 				
 				if(counter > 0 && counter == frames-1)
 					down = true;
-				else if(counter == 0 || camera.x == 0)
+				else if(camera.x == 0)
 					down = false;
 				
 			
 				step+=(1*SCREEN_FPS/60);
 			}
-			else if(counter == frames-1)
+			if(counter == frames-1)
+			{
 				done = true;
+				counter = 0;
+			}
 			camera.x = counter*camera.w;
 		}
 		
@@ -334,13 +434,16 @@ class animatedAsset : public texture
 		
 		bool down = false;
 		
-		// pause on the first frame 
+		// pause on the first frame (for visual novel stuff)
 		bool pause_first = false;
 		
 		// the current frame that we're on in the image 
 		int counter = 0;
 		
 		bool done = false;
+		
+		// increment step for counting 
+		int step = 0;
 		
 	private:
 	
@@ -349,9 +452,6 @@ class animatedAsset : public texture
 		
 		// the section of the image that we're looking at 
 		SDL_Rect camera;
-		
-		// increment step for counting 
-		int step = 0;
 		
 		// number of frames in image 
 		int frames = 0;
@@ -367,12 +467,16 @@ enum input_type {
 					
 					SELECT = -2,
 					CANCEL = -3,
-					MENU = -4,
+					
+					MOUSECLICK_R = -4,
+					MOUSECLICK_L = -5,
 					
 					UP = 1,
 					DOWN = 2,
 					LEFT = 3,	
-					RIGHT = 4
+					RIGHT = 4,
+					
+					MENU = 5
 				};
 
 // input handler				
@@ -384,18 +488,25 @@ class input_handler
 			e = new SDL_Event;
 			state = NONE;
 		}
+		
+		// typed keyboard text 
+		string typedText()
+		{
+			return e->text.text;
+		}
+		
 		void update() // polls events 
 		{
 			input_type x = NONE;
 			
 			// get mouse info 
 			SDL_GetMouseState( &mouseX, &mouseY );
-			
-			const Uint8* keyStates = SDL_GetKeyboardState(NULL);			
+			 
+			const Uint8* keyStates = SDL_GetKeyboardState(NULL);
 			if(keyStates[SDL_SCANCODE_SPACE])
 				x = MENU;
-		
-			while(SDL_PollEvent(e)) // grabs input events 
+			
+			while(SDL_PollEvent(e) != 0) // grabs input events 
 			{			
 				switch(e->type)
 				{
@@ -407,6 +518,44 @@ class input_handler
 								break;
 							}
 						}
+					break;
+					
+					case SDL_MOUSEBUTTONDOWN:
+						switch(e->button.button)
+						{
+							case SDL_BUTTON_RIGHT:
+								x=MOUSECLICK_R;
+							break;
+							case SDL_BUTTON_LEFT:
+								x=MOUSECLICK_L;
+							break;
+						}
+					break;
+					
+					case SDL_JOYBUTTONDOWN: // for controller input
+					
+						switch(e->jbutton.button)
+						{
+							case SDL_CONTROLLER_BUTTON_DPAD_UP:
+								x=UP;
+							break;
+							case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+								x=DOWN;
+							break;
+							case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+								x=LEFT;
+							break;
+							case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+								x=RIGHT;
+							break;
+							case SDL_CONTROLLER_BUTTON_A:
+								x=SELECT;
+							break;
+							case SDL_CONTROLLER_BUTTON_B:
+								x=CANCEL;
+							break;
+						}
+					
 					break;
 					
 					case SDL_KEYDOWN: // for keyboard input
@@ -440,35 +589,6 @@ class input_handler
 							break;
 						}
 					break;
-					
-					case SDL_JOYBUTTONDOWN: // for controller input
-					
-						switch(e->jbutton.button)
-						{
-							case SDL_CONTROLLER_BUTTON_DPAD_UP:
-								x=UP;
-							break;
-							case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-								x=DOWN;
-							break;
-							case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-								x=LEFT;
-							break;
-							case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-								x=RIGHT;
-							break;
-							case SDL_CONTROLLER_BUTTON_A:
-								x=SELECT;
-							break;
-							case SDL_CONTROLLER_BUTTON_B:
-								x=CANCEL;
-							break;
-							case SDL_CONTROLLER_BUTTON_Y:
-								x=MENU;
-							break;
-						}
-					
-					break;
 	
 					case SDL_WINDOWEVENT_CLOSE:
 					case SDL_QUIT: // clicking the x window button
@@ -482,7 +602,6 @@ class input_handler
 			}
 			
 			state = x;
-			
 		}
 	
 		input_type state;
@@ -491,116 +610,89 @@ class input_handler
 		SDL_Event * e; // gets event inputs		
 };
 
-class text 
-{
-	public:		
-		text(){}
-		text(SDL_Renderer * r,int fontType=0,int paramSize=40);
-		
-		// loading text letters with specific textures 
-		void loadLetters();
-
-		// for displaying text 
-		void display(string t, int x=0, int y=0, double angle=0);
-		
-		int size = START_SIZE; // size of text 
-		SDL_Color textColor = {255,255,255,255}; // text color 
-		bool black = false; // does the text color just default to black?
-		
-	private:
-		int height; // size of each letter (heigth * width)
-		int width;
-		
-		// map of textures for letters, probably going to use a different data structure later (I hope)
-		map<char,SDL_Texture*> letters; 
-		
-		SDL_Renderer * renderer; // renderer being used 
-
-		SDL_Rect * renderQuad;
-		
-		string words;
-		TTF_Font *font = NULL; // font information 
-}; 
-
-// class for handling general text information displaying
-class textInfo
-{
-	public:
-		text displayText;
-		
-		textInfo(){};
-		textInfo(SDL_Renderer * g,int type = 0, int size=0);
-		
-		// start text timer
-		void startTextDisplay();
-		
-		// add line of dialogue 
-		void addLine(string s);
-		
-		// set current script to most recent 
-		void reset();
-		
-		// display text 
-		void display(int x, int y);
-		
-		// go to next line 
-		void continueText();
-		
-		void deallocate();
-		
-		// can the player input stuff now that the lines are done?
-		bool finishedLines = false;	
-		
-		// the text being displayed
-		vector<string> lines = vector<string>();
-		
-		// is the line being read done?
-		bool finishedLine = false;
-		
-		SDL_Renderer * target;
-		
-		// timer for keeping track of speed for displaying tex	t
-		timer texttimer; 
-		
-		// rate variable for showing characters 
-		int counter = 0;
-		
-		// current character in the string and the counter for what is displayed
-		int currentPos = 0;
-		
-		// current line being read
-		int currentScript = 0;	
-};
-
 // main game handler, general flow of the main game
-class Window
+class game_handler
 {
 	public:
 		// PUBLIC FUNCTIONS 
 		
 		// initalize the game/constructor 
-		Window();
+		game_handler();
+		game_handler(int x);
 		
-		// display renderer to window 
-		void display();
+		// loads background assets 
+		void loadBackground(int type);
 		
-		// clear display 
-		void clearDisplay();
+		// main background in the game 
+		void background();
+		
+		// run the current game system 
+		void runSystem();
+		
+		// switch the current game system being run 
+		void switchSystem(system_handler * game);
 		
 		// ending game, deconstructor  
 		void close();
 		
+		// display background
+		void background(bool down);
+		
+		// switching to a different background
+		void switchBackground(int newOne);
+		
 		// PUBLIC VARIABLES 
 		SDL_Renderer* renderer = NULL; // window renderer
+	
+		image * background_assets = NULL; // holds background images 
 		
-		Uint8 colors[4] = {WHITE,0}; // background color of the window
+		// for displaying images 
+		SDL_Surface* images;
+	
+		// handles input in the game 
+		input_handler input = input_handler();
 		
-		textInfo textHandler; // for displaying text 
+		// is the game running the current system?
+		bool runningSystem = true;
+		
+		// the current game system the game is in 
+		system_handler * currentGame = NULL;
+		
+		// main text handler
+		text displayText;
+		
+		bool backgroundOn = true;
+		
+		Mix_Music * music; // game music
+		
+		// variables for animation when loading assets onto the screen 
+		bool loadIn = false;
+		
+		// variables for animation when switching out background assets
+		bool switchOut = false;
 		
 	private:
+		// used for background assets with rendering sections 
+		SDL_Rect renderRect;
+		
+		// what background to switch to if switchOut = true
+		int switchTo = 0;
+	
+		// alpha for assets
+		int megaAlpha = 0;
+		
+		// movement of background assets 
+		bool down = true;
+		
+		// some backgrounds are different even if they're the same type
+		int back_type = 0;
+		
+		int b = 0; // background type 
+		
 		// did the window load successfully?
 		bool success = false;
 		SDL_Window* window = NULL; // window 
+		Uint8 colors[4] = {WHITE,0}; // background color of the window
 	
 		SDL_Texture* texture = NULL; // displayed texture
 	
@@ -610,13 +702,6 @@ class Window
 		int frames = 0; // frame counter
 		double avgFPS; // the average FPS calculated throughout the window operation
 };
-
-
-// universal input handler 
-static input_handler input = input_handler();	
-
-// stats class used by characters in the game
-class character_stats;
 
 // class layout for subsystems
 class system_handler
@@ -631,102 +716,22 @@ class system_handler
 		// handle the game system 
 		virtual void handler(){};
 		
-		// deallocate memory 
+		// for calling another system 
+		virtual void callSystem(){};
+		
+		// deallocating assets 
 		virtual void deallocate(){};
 		
-		bool systemEnd = false;
+		// for ending the system
+		void endSystemHandler()
+		{
+			endSystem = true;
+		};
+		
+		// is the current system ending?
+		bool endSystem = false;
 	protected:
 		
 		// the game system that the game is currently handling 
-		Window * gameWindow;
-};
-
-class dungeon : public system_handler
-{
-	public:
-		dungeon(){}
-};
-
-enum menuStat
-{
-	
-};
-
-class battle : public system_handler
-{
-	public:
-		battle(){}
-		battle(Window * g);
-		
-		// enemy AI actions
-		void enemyAI();
-		
-		// handling the turns in combat 
-		void turn_handler();
-		
-		// when the player selects a move for a party member 
-		void player_selection();
-		
-		void display() override;
-	
-		void handler() override;
-		
-		void deallocate() override;
-
-	private:
-		// handling variables 
-		
-			// enemy stats
-				character_stats * enemySide;
-				int numEnemies;
-			
-			// overall combat turn order 
-				vector<character_stats*> turnOrder;
-			
-			// target for commands/actions
-				character_stats * target;
-				int numTargets;
-				int selectedTarget;
-				
-				int calculatedDamage = 0;
-				
-			// selected action option
-				int menuOption = 0;
-				int maxOptions = 5;
-				
-		// test variables 
-			int monsterType = 0;
-			bool switchMonster = false;		
-				
-		// assets used for UI
-
-				// enemy sprites
-				texture * enemy_sprites;
-				
-				// used for selecting enemy targets
-				texture cursor;
-				
-				// menu icons 
-				texture textBox;
-				
-				// background behind enemy sprites 
-				texture battleBackground;
-				
-				// menu command UI 
-				texture commandBox;
-				
-				// background for party status 
-				texture partyBackground;
-				
-				// buff/debuff icons 
-				texture buffs;
-				
-				// character status icons 
-				texture statusBar;
-};
-
-class title_screen : public system_handler
-{
-	public:
-		title_screen(){}
+		game_handler * main_game;
 };
