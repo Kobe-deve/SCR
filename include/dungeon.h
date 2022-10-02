@@ -332,7 +332,7 @@ class dungeon_crawling : public system_handler
 					if(movableEnemies[i] && coords[i][1] == pY && coords[i][0] == pX)
 					{
 						movableEnemies[i] = false;
-						endSystemHandler(); 
+						endSystem = true;
 					}
 				}
 						

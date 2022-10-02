@@ -1,6 +1,6 @@
-#include "title_screen.h"
-#include "battle_system.h"
-#include "dungeon.h"
+#include "include/title_screen.h"
+#include "include/battle_system.h"
+#include "include/dungeon.h"
 
 //g++ prototype.cpp -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -static-libstdc++ -std=c++11 -Wl,-rpath,./ -o prototype
 
