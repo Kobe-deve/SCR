@@ -2,7 +2,9 @@
 #include "include/battle_system.h"
 #include "include/dungeon.h"
 
-//g++ prototype.cpp -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -static-libstdc++ -std=c++11 -Wl,-rpath,./ -o prototype
+#include "include/http_provider.h"
+
+//g++ prototype.cpp -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lcurl -static-libstdc++ -std=c++11 -Wl,-rpath,./ -o prototype
 
 class game_over : public system_handler
 {
@@ -59,7 +61,15 @@ int main(int argc, char *argv[])
 	battle * test3 = nullptr;
 	game_over * go = nullptr;
 	
+	
+	httpProvider connectionHandler = httpProvider();
+	
 	game.currentGame = test1;
+	
+	if(connectionHandler.connected)
+	{
+		connectionHandler.testGET();
+	}
 	
 	while(game.input.state != EXIT)
 	{
@@ -133,6 +143,12 @@ int main(int argc, char *argv[])
 				game.music =  Mix_LoadMUS( "resources/music/test_dungeon.wav");
 				Mix_FadeInMusic(game.music, -1, 1000); // fades into new music 
 			}
+		}
+		
+		
+		if(connectionHandler.connected)
+		{
+			connectionHandler.pingServer();
 		}
 	}
 	
