@@ -30,6 +30,8 @@
 #include <fstream>
 #include <math.h>
 #include <time.h>
+#include <curl/curl.h>
+
 using namespace std;
 
 //Screen dimension constants
@@ -610,6 +612,24 @@ class input_handler
 		SDL_Event * e; // gets event inputs		
 };
 
+class httpProvider
+{
+	public:
+		// make sure that the server is connected/active
+		httpProvider();
+		void pingServer();
+		void testGET();
+	
+		bool connected = false;
+	
+	private:
+		string url;
+		
+		CURL *curl;
+		CURLcode res;
+		
+};
+
 // main game handler, general flow of the main game
 class game_handler
 {
@@ -671,6 +691,8 @@ class game_handler
 		// variables for animation when switching out background assets
 		bool switchOut = false;
 		
+		// handles internet connection
+		httpProvider connectorAgent;
 	private:
 		// used for background assets with rendering sections 
 		SDL_Rect renderRect;
