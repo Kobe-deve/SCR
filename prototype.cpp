@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 				if(party[i].health > 0)
 					over = false;	
 			}
-				
+			
 			if(over) // game over if player defeated 
 			{
 				game.switchBackground(2);
@@ -128,6 +128,13 @@ int main(int argc, char *argv[])
 			}
 			else // continue dungeon crawling 
 			{
+				// debug mode, heal all party after
+				for(int i=0;i<numParty;i++)
+				{
+					party[i].health = party[i].maxHealth;
+				}
+			
+				
 				game.currentGame = &test2;
 				game.switchBackground(3);
 			

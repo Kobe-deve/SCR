@@ -428,6 +428,9 @@ class battle : public system_handler
 					turnOrder.pop_back();
 					startTurn = true;	
 				}
+				
+				// set option back to first 
+				bat_opt = 0;
 			}
 			
 			// check if all enemies are gone or defeated 
@@ -584,9 +587,6 @@ class battle : public system_handler
 								bat_opt = 0;
 							break;
 						
-							case SELECT:
-							
-							break;
 							case CANCEL:
 							currentSelection = SELECTION;
 							break;
@@ -610,9 +610,6 @@ class battle : public system_handler
 						
 						// move to next turn and read the line of the command being done 
 						continueText();
-						
-						// skills options set to first 
-						bat_opt = 0;
 						
 						// hit sound effect 
 						Mix_PlayChannel(0,hit,0);
