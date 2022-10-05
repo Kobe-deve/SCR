@@ -661,14 +661,16 @@ class battle : public system_handler
 					}
 				}
 				
-				if(currentSelection == FIGHT_OVER && party[0].health > 0)
+				if(!endmusicStart && currentSelection == FIGHT_OVER && party[0].health > 0)
 				{
+					endmusicStart = true;
 					Mix_FadeOutMusic(0); // stop current music 
 					main_game->music =  Mix_LoadMUS( "resources/music/Tax Evasion.wav");
 					Mix_FadeInMusic(main_game->music, -1, 100); // fades into new music 
 				}
-				else if(currentSelection == FIGHT_OVER)
+				else if(!endmusicStart && currentSelection == FIGHT_OVER)
 				{
+					endmusicStart = true;
 					Mix_FadeOutMusic(0); // stop current music 
 					main_game->music =  Mix_LoadMUS( "resources/music/Game Over.wav");
 					Mix_PlayMusic(main_game->music, 1);
@@ -676,11 +678,6 @@ class battle : public system_handler
 						
 				if(currentSelection == NOT_TURN && (currentScript+1 == lines.size()))
 					endTurn = true;
-			}
-			else if(!finishedLine && main_game->input.state == SELECT) // complete line 
-			{
-				//currentPos = lines[currentScript].size();
-				//finishedLine = true;
 			}
 			else if(!finishedLine && main_game->input.state == CANCEL) // complete line 
 				auto_bat = !auto_bat;
@@ -804,6 +801,9 @@ class battle : public system_handler
 			bool loadIn = false;
 			bool switchOut = false;
 			int megaAlpha = 0;
+			
+			// start ending music
+			bool endmusicStart = false;
 		
 		//--------------text rendering variables--------------		
 			// auto command in battles
