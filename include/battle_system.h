@@ -311,12 +311,15 @@ class battle : public system_handler
 					
 						if(slash.done == true)
 						{
-							animationOn = false;
-							slash.counter = 0;
-							slash.step = 0;
-							slash.done = false;
+							slash.reset();
+							endTurn = true;
 						}
 						break;
+						
+						default:
+						endTurn = true;
+						break;
+					
 					}
 				}
 				else
@@ -330,17 +333,19 @@ class battle : public system_handler
 						if(slash.done == true)
 						{
 							animationOn = false;
-							slash.counter = 0;
-							slash.step = 0;
-							slash.done = false;
+							slash.reset();
 						}
 						break;
+						
+						default:
+						animationOn = false;
+						break;
 					}
+					
+					// end turn when animation is over
+					if(animationOn == false)
+						endTurn = true;
 				}
-				
-				// end turn when animation is over
-				if(animationOn == false)
-					endTurn = true;
 			}
 			
 			// display for specific turn stuff  
@@ -393,7 +398,10 @@ class battle : public system_handler
 			
 			// damage info (if needed)
 			if(party[targ].health > 0)
-				lines.push_back(party[targ].name + " took "+ to_string(calcDam)+ " damage!");		
+				lines.push_back(party[targ].name + " took "+ to_string(calcDam)+ " damage!");	
+
+			// hit sound effect 
+			Mix_PlayChannel(0,hit,0);			
 		}
 		
 		// for handling character turn operations 
@@ -402,16 +410,21 @@ class battle : public system_handler
 			// checks if a character's turn ended
 			if(endTurn)
 			{
-				Mix_PlayChannel(0,hit,0);
-					
-				// update health values
-				if(currentChar->isEnemy)
+				// update health values and start animation
+				if(currentChar->isEnemy && animationOn == false)
+				{
 					party[targ].health -=calcDam;
-				
-				calcDam = 0;
-				endTurn = false;
-				turnOrder.pop_back();
-				startTurn = true;	
+					animationOn = true;
+					endTurn = false;
+				}
+				else
+				{
+					animationOn = false;
+					calcDam = 0;
+					endTurn = false;
+					turnOrder.pop_back();
+					startTurn = true;	
+				}
 			}
 			
 			// check if all enemies are gone or defeated 
@@ -433,6 +446,7 @@ class battle : public system_handler
 			{
 				startTurn = false;
 				endTurn = false;
+				animationOn = false;
 				
 				lines.push_back("You were defeated!");
 				
@@ -594,6 +608,9 @@ class battle : public system_handler
 						// skills options set to first 
 						bat_opt = 0;
 						
+						// hit sound effect 
+						Mix_PlayChannel(0,hit,0);
+			
 						// start animation 
 						animationOn = true;
 					}

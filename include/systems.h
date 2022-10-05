@@ -431,6 +431,17 @@ class animatedAsset : public image
 			camera.x = counter*camera.w;
 		}
 		
+		// resets to initial frame/values
+		void reset()
+		{
+			step = 0;
+			done = false;
+			camera.x = 0;
+			camera.y = 0;
+			counter = 0;
+			down = false;
+		}
+		
 		// should the image move?
 		bool animate = true;
 		
