@@ -1,3 +1,5 @@
+#define MODELS_DEFINED
+
 // for holding basic stats that are used in combat
 enum move_types
 {

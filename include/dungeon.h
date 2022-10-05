@@ -374,6 +374,7 @@ class dungeon_crawling : public system_handler
 					dialogue = !dialogue;
 					main_game->switchBackground(0);
 					break;
+					
 					case CANCEL:
 					main_game->switchBackground(3);
 					break;

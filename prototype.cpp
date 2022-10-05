@@ -1,6 +1,7 @@
 #include "include/title_screen.h"
 #include "include/battle_system.h"
 #include "include/dungeon.h"
+#include "include/menu_system.h"
 
 #include "include/http_provider.h"
 
@@ -59,6 +60,8 @@ int main(int argc, char *argv[])
 	title_screen * test1 = new title_screen(&game);
 	dungeon_crawling test2;
 	battle * test3 = nullptr;
+	menu_system * test4 = nullptr;
+	
 	game_over * go = nullptr;
 	
 	game.currentGame = test1;
@@ -104,6 +107,23 @@ int main(int argc, char *argv[])
 			}
 			Mix_FadeInMusic(game.music, -1, 1000); // fades into new music 
 		}
+		else if(!test2.endSystem && game.input.state == MENU) // dungeon to menu 
+		{
+			test4 = new menu_system(&game);
+			game.currentGame = test4;
+			game.switchBackground(2);
+		}
+		else if(test4 != nullptr && test4->endSystem) // menu to dungeon 
+		{
+			test4->endSystem = false;
+			
+			test4->deallocate();
+			delete test4;
+			test4 = nullptr;
+			
+			game.currentGame = &test2;
+			game.switchBackground(3);
+		}
 		else if(test3 != nullptr && test3->endSystem) // battle to dungeon system
 		{
 			bool over = true;
@@ -134,7 +154,6 @@ int main(int argc, char *argv[])
 					party[i].health = party[i].maxHealth;
 				}
 			
-				
 				game.currentGame = &test2;
 				game.switchBackground(3);
 			

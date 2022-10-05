@@ -1,7 +1,11 @@
 #ifndef HANDLER
 #include "game_handler.h"
 #endif
+
+#ifndef MODELS_DEFINED
 #include "models.h"
+#endif
+
 #include <algorithm> // vector sort function
 #include <utility>  // pair 
 
