@@ -483,6 +483,15 @@ class battle : public system_handler
 						break;
 						case SELECT:
 						currentSelection = static_cast<menuStatus>(option+1);
+						
+						// set default current selection to closest alive enemy 
+						if(enemySide[targ].health <= 0)
+						{
+							int x = 0;
+							while(enemySide[x].health <= 0)
+								x++;
+							targ = x;
+						}
 						break;
 						case CANCEL:
 						break;
@@ -491,13 +500,6 @@ class battle : public system_handler
 				break;
 				
 				default:
-				if(enemySide[targ].health <= 0)
-				{
-					int x = 0;
-					while(enemySide[x].health <= 0)
-						x++;
-					targ = x;
-				}
 				switch(currentSelection)
 				{
 					case SKILLS:
@@ -715,10 +717,7 @@ class battle : public system_handler
 				startTurn = false;
 				endTurn = false;
 				
-				if(numEnemies > 1)
-					lines.push_back("You defeated the enemies");
-				else
-					lines.push_back("You defeated the enemy");
+				lines.push_back("You survived! WOW!");
 				
 				over = false;
 				currentSelection = FIGHT_OVER;
