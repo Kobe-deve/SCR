@@ -390,6 +390,9 @@ class battle : public system_handler
 				targ = x;
 			}
 			
+			// move selection
+			bat_opt = 0;
+			
 			// initial text
 			lines.push_back(currentChar->name + " did stuff!");
 			
@@ -571,11 +574,14 @@ class battle : public system_handler
 							case UP: // select skills
 							if(bat_opt != 0)
 								bat_opt--;
+							else
+								bat_opt = currentChar->numMoves-1;
 							break;
 							case DOWN:
-							if(bat_opt != currentChar->numMoves)
+							if(bat_opt < currentChar->numMoves-1)
 								bat_opt++;
-						
+							else
+								bat_opt = 0;
 							break;
 						
 							case SELECT:
