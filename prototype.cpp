@@ -61,15 +61,7 @@ int main(int argc, char *argv[])
 	battle * test3 = nullptr;
 	game_over * go = nullptr;
 	
-	
-	httpProvider connectionHandler = httpProvider();
-	
 	game.currentGame = test1;
-	
-	if(connectionHandler.connected)
-	{
-		connectionHandler.testGET();
-	}
 	
 	while(game.input.state != EXIT)
 	{
@@ -145,11 +137,6 @@ int main(int argc, char *argv[])
 			}
 		}
 		
-		
-		if(connectionHandler.connected)
-		{
-			connectionHandler.pingServer();
-		}
 	}
 	
 	game.close();

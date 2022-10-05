@@ -77,6 +77,8 @@ class stats
 				abilities[2] = {SPELL, "Fusion"};
 				abilities[3] = {SPELL, "Heal"};
 				
+				isEnemy = false;
+				
 				numMoves = 4;
 				break;
 				

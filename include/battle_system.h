@@ -64,9 +64,6 @@ class battle : public system_handler
 			cursor.scale = 4;
 			
 			// set up enemy information
-			enemySide = new stats[4];
-			indivAlpha = new pair<bool, int>[4]; 
-			
 			switch(rand()%3+1)
 			{
 				/*case 1:	
@@ -76,6 +73,9 @@ class battle : public system_handler
 				break;*/
 				//case 2:
 				default:
+				enemySide = new stats[2];
+				indivAlpha = new pair<bool, int>[2]; 
+			
 				enemySide[0] = stats(g->renderer,STRANJER);
 				enemySide[0].name = "Stranjer";
 				enemySide[1] = stats(g->renderer,COBOL);
@@ -300,21 +300,47 @@ class battle : public system_handler
 			// battle animation
 			if(animationOn)
 			{
-				switch(currentChar->abilities[bat_opt].type)
+				if(currentChar->isEnemy == true) // for enemies
 				{
-					case SLASH:
-					slash.display(main_game->renderer,130*targ,280);
-					slash.update();
 					
-					if(slash.done == true)
+					switch(currentChar->abilities[bat_opt].type)
 					{
-						animationOn = false;
-						slash.counter = 0;
-						slash.step = 0;
-						slash.done = false;
+						case SLASH:
+						slash.display(main_game->renderer,595,125+150*targ);
+						slash.update();
+					
+						if(slash.done == true)
+						{
+							animationOn = false;
+							slash.counter = 0;
+							slash.step = 0;
+							slash.done = false;
+						}
+						break;
 					}
-					break;
 				}
+				else
+				{
+					switch(currentChar->abilities[bat_opt].type)
+					{
+						case SLASH:
+						slash.display(main_game->renderer,158*targ,280);
+						slash.update();
+					
+						if(slash.done == true)
+						{
+							animationOn = false;
+							slash.counter = 0;
+							slash.step = 0;
+							slash.done = false;
+						}
+						break;
+					}
+				}
+				
+				// end turn when animation is over
+				if(animationOn == false)
+					endTurn = true;
 			}
 			
 			// display for specific turn stuff  
@@ -359,9 +385,15 @@ class battle : public system_handler
 				targ = x;
 			}
 			
+			// initial text
 			lines.push_back(currentChar->name + " did stuff!");
+			
+			// calculate damage 
 			calcDam = rand()%(currentChar->strength)+1;
-			lines.push_back(party[targ].name + " took "+ to_string(calcDam)+ " damage!");		
+			
+			// damage info (if needed)
+			if(party[targ].health > 0)
+				lines.push_back(party[targ].name + " took "+ to_string(calcDam)+ " damage!");		
 		}
 		
 		// for handling character turn operations 
@@ -548,14 +580,13 @@ class battle : public system_handler
 						damage = rand()%(currentChar->strength)+1;
 						lines.push_back(enemySide[targ].name + " used "+ currentChar->abilities[bat_opt].name + ".");
 						
-						lines.push_back(enemySide[targ].name + " took "+ to_string(damage)+ " damage!");
 						enemySide[targ].health -= damage;
-						
+							
 						// if target is defeated, show it 
 						if(enemySide[targ].health <= 0)
 							indivAlpha[targ].first = true;
-						
-						endTurn = true;
+						else
+							lines.push_back(enemySide[targ].name + " took "+ to_string(damage)+ " damage!");
 						
 						// move to next turn and read the line of the command being done 
 						continueText();
@@ -690,7 +721,9 @@ class battle : public system_handler
 				}
 						
 				if(currentSelection == NOT_TURN && (currentScript+1 == lines.size()))
+				{
 					endTurn = true;
+				}
 			}
 			else if(!finishedLine && main_game->input.state == CANCEL) // complete line 
 				auto_bat = !auto_bat;
