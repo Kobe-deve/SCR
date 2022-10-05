@@ -134,6 +134,15 @@ class battle : public system_handler
 		
 		//--------------combat text handling--------------------
 		
+		// move to next line to display
+		void continueText()
+		{
+			currentScript++;
+			currentPos = 0;
+			finishedLine = false;
+			texttimer.start();				
+		}
+		
 		// adding new description dialogue for battle text 
 		void actionLine(string command)
 		{
@@ -144,10 +153,8 @@ class battle : public system_handler
 			}
 			else
 				lines.push_back(command);
-			currentScript++;
-			texttimer.start();
-			currentPos = 0;
-			finishedLine = false;
+			
+			continueText();
 		}
 		
 		//---------------display handling---------------------
@@ -549,10 +556,7 @@ class battle : public system_handler
 						endTurn = true;
 						
 						// move to next turn and read the line of the command being done 
-						currentScript++;
-						currentPos = 0;
-						finishedLine = false;
-						texttimer.start();
+						continueText();
 						
 						// skills options set to first 
 						bat_opt = 0;
@@ -602,6 +606,7 @@ class battle : public system_handler
 							main_game->music =  Mix_LoadMUS( "resources/music/Alignment.wav");
 							Mix_PlayMusic(main_game->music, 1);
 							
+							continueText();
 							main_game->switchBackground(0);
 						}
 						break;
@@ -651,20 +656,14 @@ class battle : public system_handler
 			{
 				if(auto_bat) // if auto battler is activated
 				{
-					currentScript++;
-					currentPos = 0;
-					finishedLine = false;
-					texttimer.start();
+					continueText();
 				}
 				else
 				{
 					switch(main_game->input.state)
 					{
 						case SELECT: // if the line is done, pressing enter/select goes to the next line 
-						currentScript++;
-						currentPos = 0;
-						finishedLine = false;
-						texttimer.start();
+						continueText();
 						
 						break;
 						case CANCEL:
