@@ -285,7 +285,7 @@ class battle : public system_handler
 			// party information
 			for(int i=0;i<numParty;i++)
 			{
-				if(currentChar == &party[i])
+				if(currentChar == &party[i] && currentChar->health > 0)
 					x=495;
 				else
 					x=595;
