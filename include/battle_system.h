@@ -597,6 +597,11 @@ class battle : public system_handler
 							lines.push_back("You invited " + enemySide[targ].name + " to join you.");
 							lines.push_back("They said yes!");
 							
+							// start talk music 
+							Mix_FadeOutMusic(0); // stop current music 
+							main_game->music =  Mix_LoadMUS( "resources/music/Alignment.wav");
+							Mix_PlayMusic(main_game->music, 1);
+							
 							main_game->switchBackground(0);
 						}
 						break;
@@ -621,6 +626,13 @@ class battle : public system_handler
 						indivAlpha[targ].first = true;
 						
 						endTurn = true;
+						
+						// go back to battle music
+						
+						Mix_FadeOutMusic(0); // stop current music 
+						main_game->music =  Mix_LoadMUS( "resources/music/Youth.wav");
+						Mix_PlayMusic(main_game->music, 1);
+							
 						
 						main_game->switchBackground(5);
 						break;
