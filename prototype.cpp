@@ -115,6 +115,12 @@ int main(int argc, char *argv[])
 		}
 		else if(test4 != nullptr && test4->endSystem) // menu to dungeon 
 		{
+			// debug mode, heal all party after
+			for(int i=0;i<numParty;i++)
+			{
+				party[i].health = party[i].maxHealth;
+			}
+			
 			test4->endSystem = false;
 			
 			test4->deallocate();
@@ -148,11 +154,6 @@ int main(int argc, char *argv[])
 			}
 			else // continue dungeon crawling 
 			{
-				// debug mode, heal all party after
-				for(int i=0;i<numParty;i++)
-				{
-					party[i].health = party[i].maxHealth;
-				}
 			
 				game.currentGame = &test2;
 				game.switchBackground(3);

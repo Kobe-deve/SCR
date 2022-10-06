@@ -80,8 +80,10 @@ class battle : public system_handler
 				enemySide = new stats[2];
 				indivAlpha = new pair<bool, int>[2]; 
 			
-				enemySide[0] = stats(g->renderer,STRANJER);
-				enemySide[0].name = "Stranjer";
+				//enemySide[0] = stats(g->renderer,STRANJER);
+				//enemySide[0].name = "Stranjer";
+				enemySide[0] = stats(g->renderer,COBOL);
+				enemySide[0].name = "Cobol";
 				enemySide[1] = stats(g->renderer,COBOL);
 				enemySide[1].name = "Cobol";
 				numEnemies = 2;
@@ -353,7 +355,7 @@ class battle : public system_handler
 			}
 			
 			// display for specific turn stuff  
-			if(finishedLine && (currentScript+1 == lines.size()) && currentSelection != TALK && currentSelection != FIGHT_OVER && currentSelection != NOT_TURN)
+			if(!auto_bat && finishedLine && (currentScript+1 == lines.size()) && currentSelection != TALK && currentSelection != FIGHT_OVER && currentSelection != NOT_TURN)
 				partyOption(x);
 			
 			// text battle info 
@@ -501,7 +503,16 @@ class battle : public system_handler
 				lines.push_back("It's " + currentChar->name + "'s turn.");
 				startTurn = false;
 				currentSelection = SELECTION;
-				targ = 0;
+				
+				// set default current selection to closest alive enemy 
+				if(enemySide[targ].health <= 0)
+				{
+					int x = 0;
+					while(enemySide[x].health <= 0)
+						x++;
+					targ = x;
+				}
+						
 				bat_opt = 0;
 				option = 0;
 			}
@@ -540,14 +551,6 @@ class battle : public system_handler
 						case SELECT:
 						currentSelection = static_cast<menuStatus>(option+1);
 						
-						// set default current selection to closest alive enemy 
-						if(enemySide[targ].health <= 0)
-						{
-							int x = 0;
-							while(enemySide[x].health <= 0)
-								x++;
-							targ = x;
-						}
 						break;
 						case CANCEL:
 						break;
