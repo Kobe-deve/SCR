@@ -82,12 +82,13 @@ class title_screen : public system_handler
 			main_game->displayText.display("ARROW KEYS - MOVEMENT",10,40);
 			main_game->displayText.display("SPACEBAR - STATUS/MENU",10,70);
 			
-			main_game->displayText.display("BATTLE CONTROLS:",10,10);
-			main_game->displayText.display("ARROW KEYS - SELECT OPTION",10,40);
-			main_game->displayText.display("ENTER - CONFIRM",10,70);
-			main_game->displayText.display("BACKSPACE - BACK",10,70);
-			main_game->displayText.display("SPACEBAR - AUTO",10,70);
+			main_game->displayText.display("BATTLE CONTROLS:",10,120);
+			main_game->displayText.display("ARROW KEYS - SELECT OPTION",10,150);
+			main_game->displayText.display("ENTER - CONFIRM",10,180);
+			main_game->displayText.display("BACKSPACE - BACK",10,210);
+			main_game->displayText.display("SPACEBAR - AUTO BATTLE",10,240);
 			
+			main_game->displayText.display("Press Enter to exit",600,650);
 			
 		}
 		
