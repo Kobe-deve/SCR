@@ -726,7 +726,7 @@ class battle : public system_handler
 						continueText();
 						
 						break;
-						case CANCEL:
+						case MENU:
 						auto_bat = !auto_bat;
 						
 						main_game->displayText.black = auto_bat;	
@@ -755,7 +755,7 @@ class battle : public system_handler
 					endTurn = true;
 				}
 			}
-			else if(!finishedLine && main_game->input.state == CANCEL) // complete line 
+			else if(!finishedLine && main_game->input.state == MENU) // complete line 
 				auto_bat = !auto_bat;
 			else if(finishedLine) // if the line is finished and the player's turn is up 
 				player_turn_handler();

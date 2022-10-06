@@ -516,8 +516,8 @@ class input_handler
 			SDL_GetMouseState( &mouseX, &mouseY );
 			 
 			const Uint8* keyStates = SDL_GetKeyboardState(NULL);
-			if(keyStates[SDL_SCANCODE_SPACE])
-				x = MENU;
+			//if(keyStates[SDL_SCANCODE_SPACE])
+			//	x = MENU;
 			
 			while(SDL_PollEvent(e) != 0) // grabs input events 
 			{			
@@ -596,6 +596,10 @@ class input_handler
 								x = UP;
 							break;
 						
+							case SDLK_SPACE:
+								x = MENU;
+							break;
+							
 							case SDLK_s:
 							case SDLK_DOWN:
 								x = DOWN;
@@ -610,6 +614,9 @@ class input_handler
 				
 					default:
 						x = NONE;
+						if(e->key.keysym.sym == 1968515024)
+							x = MENU;
+				
 					break;
 				}
 			}

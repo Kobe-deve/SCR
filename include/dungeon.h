@@ -371,12 +371,12 @@ class dungeon_crawling : public system_handler
 					}
 					break;
 					case SELECT:
-					dialogue = !dialogue;
-					main_game->switchBackground(0);
+					//dialogue = !dialogue;
+					//main_game->switchBackground(0);
 					break;
 					
 					case CANCEL:
-					main_game->switchBackground(3);
+					//main_game->switchBackground(3);
 					break;
 				}
 				// checks what tile the player is on 

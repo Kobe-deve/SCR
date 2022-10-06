@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 			}
 			Mix_FadeInMusic(game.music, -1, 1000); // fades into new music 
 		}
-		else if(!test2.endSystem && game.input.state == MENU) // dungeon to menu 
+		else if(game.currentGame == &test2 && !test2.endSystem && game.input.state == MENU) // dungeon to menu 
 		{
 			test4 = new menu_system(&game);
 			game.currentGame = test4;
@@ -115,12 +115,6 @@ int main(int argc, char *argv[])
 		}
 		else if(test4 != nullptr && test4->endSystem) // menu to dungeon 
 		{
-			// debug mode, heal all party after
-			for(int i=0;i<numParty;i++)
-			{
-				party[i].health = party[i].maxHealth;
-			}
-			
 			test4->endSystem = false;
 			
 			test4->deallocate();
