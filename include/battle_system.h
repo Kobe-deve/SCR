@@ -728,6 +728,9 @@ class battle : public system_handler
 						break;
 						case CANCEL:
 						auto_bat = !auto_bat;
+						
+						main_game->displayText.black = auto_bat;	
+						main_game->displayText.textColor.a = 255;
 						break;
 					}
 				}
@@ -804,6 +807,8 @@ class battle : public system_handler
 			
 			slash.deallocate();
 			combat_info.deallocate();
+			
+			main_game->displayText.black = false;
 		}
 		
 	private:
