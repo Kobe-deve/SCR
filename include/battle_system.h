@@ -58,6 +58,7 @@ class battle : public system_handler
 			endHeart = image("resources/sprites/battle/heart.png",g->renderer);
 			player_port = image("resources/sprites/battle/player_portrait.png",g->renderer);			
 			cursor = image("resources/sprites/battle/target.png",g->renderer);
+			autoBatIcon = image("resources/sprites/battle/auto.png",g->renderer);	
 			
 			slash = animatedAsset(300,300,5,1800,6,"resources/sprites/animations/slash.png",g->renderer);
 			
@@ -270,6 +271,9 @@ class battle : public system_handler
 					enemySide[i].sprite.setAlpha(megaAlpha);
 				
 				textArea.setAlpha(megaAlpha);
+				if(auto_bat)
+					autoBatIcon.setAlpha(megaAlpha);
+			
 			}
 			
 			// main area/border
@@ -362,8 +366,9 @@ class battle : public system_handler
 			textArea.render(main_game->renderer,20,5);
 			textInfo();
 			
+			// showing that auto battler is enabled 
 			if(auto_bat)
-				main_game->displayText.display("AUTO",600,10);
+				autoBatIcon.render(main_game->renderer,750,10);
 			
 			// loading in and switching out battle system animatino 
 			if(loadIn && megaAlpha == 255)
@@ -801,6 +806,7 @@ class battle : public system_handler
 			endHeart.deallocate();
 			player_port.deallocate();			
 			cursor.deallocate();
+			autoBatIcon.deallocate();
 			
 			for(int i=0;i<numEnemies;i++)
 				enemySide[i].deallocate();
@@ -854,6 +860,8 @@ class battle : public system_handler
 			image menu;
 			image party_menu;
 			image player_port;
+			
+			image autoBatIcon;
 			
 			image border;
 			image area;
