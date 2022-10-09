@@ -616,7 +616,7 @@ class input_handler
 						x = NONE;
 						if(e->key.keysym.sym == 1968515024)
 							x = MENU;
-				
+						
 					break;
 				}
 			}
@@ -775,3 +775,18 @@ class system_handler
 		// the game system that the game is currently handling 
 		game_handler * main_game;
 };
+
+// enumerations 
+
+
+// direction facing in dungeons/towns 
+enum facing 
+{
+	NORTH = 1,
+	SOUTH = 2,
+	WEST = 3,	
+	EAST = 4
+};
+
+
+

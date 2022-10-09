@@ -2,14 +2,6 @@
 #include "game_handler.h"
 #endif
 
-enum facing 
-{
-	NORTH = 1,
-	SOUTH = 2,
-	WEST = 3,	
-	EAST = 4
-};
-
 struct movableEnemy
 {
 	bool alive = true;
@@ -116,6 +108,7 @@ class dungeon_crawling : public system_handler
 					// display specific block
 					renderRect = {40*(map[pZ][y][x]-'0'),0,40,40};
 					
+					// vision brightness
 					if((pY-1 == y || pY == y || pY+1 ==y) && (pX-1 == x || pX == x || pX+1 ==x))
 					{
 						enemy.setColor(255,255,255);
@@ -133,6 +126,7 @@ class dungeon_crawling : public system_handler
 					
 					brick.render(main_game->renderer,cameraX+(y*20*scale)+(x*20*scale),cameraY-(x*10*scale)+(y*10*scale),&renderRect);
 					
+					// display enemies 
 					for(int i=0;i<numEnemies;i++)
 					{
 						if(movableEnemies[i] && coords[i][0] == x && coords[i][1] == y )
@@ -434,6 +428,15 @@ class dungeon_crawling : public system_handler
 					moveEnemyTimer.start();	
 				}
 			}
+		}
+	
+		void deallocate()
+		{
+			player.deallocate(); 
+			b_player.deallocate();
+			enemy.deallocate();
+			brick.deallocate();  
+			textbackground.deallocate();
 		}
 	
 	private:
