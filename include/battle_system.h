@@ -183,13 +183,13 @@ class battle : public system_handler
 			if(currentScript == lines.size()-1 && finishedLine)
 				inputGo = true;
 
-			combat_info.display(lines[currentScript].substr(0,currentPos),60,50);		
+			combat_info.display(lines[currentScript].substr(0,currentPos),displayX+60,displayY+50);		
 			
 			
 			// cursor at the end of a finished line 
 			if(finishedLine)
 			{
-				endHeart.render(main_game->renderer,630,75+pointy);
+				endHeart.render(main_game->renderer,displayX+630,displayY+75+pointy);
 				
 				// end heart up and down animation 
 				if(pointy > 5)
@@ -210,21 +210,21 @@ class battle : public system_handler
 			for(int i=0;i<3;i++)
 			{
 				if(i==option)
-					x = 60;
+					x = displayX+60;
 				else
-					x = 10;
+					x = displayX+10;
 				
-				menu.render(main_game->renderer,x,500+i*55);
+				menu.render(main_game->renderer,x,displayY+500+i*55);
 				switch(i)
 				{
 					case 0:
-					combat_info.display("Skills",x+20,510+i*55);
+					combat_info.display("Skills",x+20,displayY+510+i*55);
 					break;
 					case 1:
-					combat_info.display("Talk",x+20,510+i*55);
+					combat_info.display("Talk",x+20,displayY+510+i*55);
 					break;
 					case 2:
-					combat_info.display("Items",x+20,510+i*55);
+					combat_info.display("Items",x+20,displayY+510+i*55);
 					break;
 				}
 			}	
@@ -232,20 +232,20 @@ class battle : public system_handler
 			switch(currentSelection)
 			{
 				case T_TALK:
-				cursor.render(main_game->renderer,90+130*targ,150);		
+				cursor.render(main_game->renderer,displayX+90+130*targ,displayY+150);		
 				break;
 			
 				case SKILLS: // picking skills 
 				for(int i=0;i<currentChar->numMoves;i++)
 				{
-					x = 350;		
+					x = displayX+350;		
 					if(i==bat_opt) // if the current option is this skill, move it left 
 						x -= 50;
 		
-					menu.render(main_game->renderer,x,500+i*55);
-					combat_info.display(currentChar->abilities[i].name,x+20,510+i*55);	
+					menu.render(main_game->renderer,x,displayY+500+i*55);
+					combat_info.display(currentChar->abilities[i].name,x+20,displayY+510+i*55);	
 				}	
-				cursor.render(main_game->renderer,90+130*targ,150);				
+				cursor.render(main_game->renderer,displayX+90+130*targ,displayY+150);				
 				
 				break;				
 			}
@@ -276,9 +276,21 @@ class battle : public system_handler
 			
 			}
 			
+			// change based on full screen or not 
+			if(main_game->input.FullScreen)
+			{
+				displayX = SCREEN_WIDTH/5;
+				displayY = SCREEN_HEIGHT/8;
+			}
+			else	
+			{
+				displayX = 0;
+				displayY = 0;
+			}	
+			
 			// main area/border
-			area.render(main_game->renderer,35,170);
-			border.render(main_game->renderer,10,160);
+			area.render(main_game->renderer,displayX+35,displayY+170);
+			border.render(main_game->renderer,displayX+10,displayY+160);
 			
 			// display enemy sprites 			
 			for(int i=0;i<numEnemies;i++)
@@ -289,22 +301,22 @@ class battle : public system_handler
 						indivAlpha[i].second-=5;
 					enemySide[i].sprite.setAlpha(indivAlpha[i].second);
 				}
-				enemySide[i].sprite.render(main_game->renderer,50+130*i,300);
+				enemySide[i].sprite.render(main_game->renderer,displayX+50+130*i,displayY+300);
 			}
 			
 			// party information
 			for(int i=0;i<numParty;i++)
 			{
 				if(currentChar == &party[i] && currentChar->health > 0)
-					x=495;
+					x=displayX+495;
 				else
-					x=595;
+					x=displayX+595;
 				
-				party_menu.render(main_game->renderer,x,120+150*i); 
-				party[i].portraitDisplay(main_game->renderer,x+10,125+150*i,loadIn || switchOut);
-				combat_info.display(party[i].name,x+150,220+150*i);	
-				combat_info.display("HP:" + to_string(party[i].health)+"/"+to_string(party[i].maxHealth),x+145,130+150*i);
-				combat_info.display("STAMINA:" + to_string(party[i].stamina)+"/"+to_string(party[i].maxStamina),x+145,175+150*i);
+				party_menu.render(main_game->renderer,x,displayY+120+150*i); 
+				party[i].portraitDisplay(main_game->renderer,x+10,displayY+125+150*i,loadIn || switchOut);
+				combat_info.display(party[i].name,x+150,displayY+220+150*i);	
+				combat_info.display("HP:" + to_string(party[i].health)+"/"+to_string(party[i].maxHealth),x+145,displayY+130+150*i);
+				combat_info.display("STAMINA:" + to_string(party[i].stamina)+"/"+to_string(party[i].maxStamina),x+145,displayY+175+150*i);
 			}
 			
 			// battle animation
@@ -316,7 +328,7 @@ class battle : public system_handler
 					switch(currentChar->abilities[bat_opt].type)
 					{
 						case SLASH:
-						slash.display(main_game->renderer,595,125+150*targ);
+						slash.display(main_game->renderer,displayX+595,displayY+125+150*targ);
 						slash.update();
 					
 						if(slash.done == true)
@@ -337,7 +349,7 @@ class battle : public system_handler
 					switch(currentChar->abilities[bat_opt].type)
 					{
 						case SLASH:
-						slash.display(main_game->renderer,158*targ,280);
+						slash.display(main_game->renderer,displayX+158*targ,displayY+280);
 						slash.update();
 					
 						if(slash.done == true)
@@ -363,12 +375,12 @@ class battle : public system_handler
 				partyOption(x);
 			
 			// text battle info 
-			textArea.render(main_game->renderer,20,5);
+			textArea.render(main_game->renderer,displayX+20,displayY+5);
 			textInfo();
 			
 			// showing that auto battler is enabled 
 			if(auto_bat)
-				autoBatIcon.render(main_game->renderer,750,10);
+				autoBatIcon.render(main_game->renderer,displayX+750,displayY+10);
 			
 			// loading in and switching out battle system animatino 
 			if(loadIn && megaAlpha == 255)
@@ -868,6 +880,8 @@ class battle : public system_handler
 			image endHeart;
 		
 			image talk_bubble;
+			
+			int displayX, displayY;
 			
 			// the option the player selects for combat 
 			int option = 0;

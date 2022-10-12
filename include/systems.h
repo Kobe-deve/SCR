@@ -35,8 +35,8 @@
 using namespace std;
 
 //Screen dimension constants
-const int SCREEN_WIDTH = 960;
-const int SCREEN_HEIGHT = 720;
+int SCREEN_WIDTH = 960;
+int SCREEN_HEIGHT = 720;
 
 #define PI 3.14159256
 

@@ -324,9 +324,15 @@ void game_handler::runSystem()
 		if(input.FullScreen)
 		{
 			SDL_SetWindowFullscreen(window, SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP);
+			SDL_DisplayMode DM;
+			SDL_GetCurrentDisplayMode(0, &DM);
+			SCREEN_WIDTH = DM.w;
+			SCREEN_HEIGHT = DM.h;
 		}
 		else
 		{
+			SCREEN_WIDTH = 960;
+			SCREEN_HEIGHT = 720;
 			SDL_SetWindowFullscreen(window, SDL_WINDOW_SHOWN);
 		}
 			
