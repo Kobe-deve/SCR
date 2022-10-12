@@ -46,7 +46,8 @@ class town : public system_handler
 				renderRect = {160,0,40,40};
 				
 				brick.render(main_game->renderer,cameraX+(y*20*scale)+(x*20*scale),cameraY-(x*10*scale)+(y*10*scale),&renderRect);
-				// display characters/buildings 
+				
+				// display characters 
 				if(pX == x && pY == y)
 				{
 					// display player 
@@ -121,11 +122,9 @@ class town : public system_handler
 					player.setColor(255,255,255);
 					b_player.setColor(255,255,255);		
 				}
+		
 			}	
 		}	
-		
-		building.render(main_game->renderer,cameraX+(50*20*scale)+(50*20*scale),cameraY-(50*10*scale)+(50*10*scale));
-			
 		
 		// displaying dialogue
 		if(dialogue)
@@ -241,8 +240,8 @@ class town : public system_handler
 		int max_x;
 		
 		// player coords
-		int pX = 0;
-		int pY = 4;
+		int pX = 50;
+		int pY = 50;
 		int pZ = 0;
 		
 		// image of dungeon blocks

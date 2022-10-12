@@ -519,7 +519,7 @@ class input_handler
 			//if(keyStates[SDL_SCANCODE_SPACE])
 			//	x = MENU;
 			
-			while(SDL_PollEvent(e) != 0) // grabs input events 
+			while(SDL_PollEvent(e)) // grabs input events 
 			{			
 				switch(e->type)
 				{
@@ -613,10 +613,6 @@ class input_handler
 					break;
 				
 					default:
-						x = NONE;
-						if(e->key.keysym.sym == 1968515024)
-							x = MENU;
-						
 					break;
 				}
 			}
