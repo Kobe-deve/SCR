@@ -23,15 +23,15 @@ class title_screen : public system_handler
 		// displayed selection/title screen
 		void selectionScreen()
 		{
-			test2.render(main_game->renderer,0,0);
+			test2.render(main_game->renderer,(SCREEN_WIDTH-960),0+(SCREEN_HEIGHT-720));
 				
-			test_logo.render(main_game->renderer,400,300);
+			test_logo.render(main_game->renderer,400+(SCREEN_WIDTH-960),300+(SCREEN_HEIGHT-720));
 			
-			main_game->displayText.display("New Game",600,520,angleSelect[0]);
-			main_game->displayText.display("Instructions",600,560,angleSelect[1]);
+			main_game->displayText.display("New Game",600+(SCREEN_WIDTH-960),520+(SCREEN_HEIGHT-720),angleSelect[0]);
+			main_game->displayText.display("Instructions",600+(SCREEN_WIDTH-960),560+(SCREEN_HEIGHT-720),angleSelect[1]);
 				
-			main_game->displayText.display("FINALITY GAMES",10,600);
-			main_game->displayText.display("Developed by: DEMI",10,650);
+			main_game->displayText.display("FINALITY GAMES",10,600+(SCREEN_HEIGHT-720));
+			main_game->displayText.display("Developed by: DEMI",10,650+(SCREEN_HEIGHT-720));
 			
 		}
 		
@@ -44,11 +44,11 @@ class title_screen : public system_handler
 			test2.setAlpha(megaAlpha);
 			
 			if(!loadMonster)
-				test.render(main_game->renderer,200,0);
+				test.render(main_game->renderer,200+(SCREEN_WIDTH-960),0+(SCREEN_HEIGHT-720));
 			else
-				test2.render(main_game->renderer,0,0);
+				test2.render(main_game->renderer,(SCREEN_WIDTH-960),0+(SCREEN_HEIGHT-720));
 				
-			test_logo.render(main_game->renderer,400,300);
+			test_logo.render(main_game->renderer,400+(SCREEN_WIDTH-960),300+(SCREEN_HEIGHT-720));
 			
 			if(!loadedMonster)
 			{
@@ -87,6 +87,9 @@ class title_screen : public system_handler
 			main_game->displayText.display("ENTER - CONFIRM",10,180);
 			main_game->displayText.display("BACKSPACE - BACK",10,210);
 			main_game->displayText.display("SPACEBAR - AUTO BATTLE",10,240);
+			
+			
+			main_game->displayText.display("F KEY - FULLSCREEN TOGGLE",10,300);
 			
 			main_game->displayText.display("Press Enter to exit",600,650);
 			

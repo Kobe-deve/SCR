@@ -133,7 +133,7 @@ void game_handler::background(bool down)
 		background_assets[1].angle = ((((int)background_assets[1].angle + 1)%360)*60/SCREEN_FPS);
 		background_assets[1].render(renderer,-100,500);
 		background_assets[1].angle *= -1; 
-		background_assets[1].render(renderer,640,-90);
+		background_assets[1].render(renderer,SCREEN_WIDTH-180,-90);
 		background_assets[1].angle *= -1;	
 		
 		background_assets[0].angle = ((((int)background_assets[0].angle + 2)%360)*60/SCREEN_FPS);
@@ -142,7 +142,7 @@ void game_handler::background(bool down)
 		{
 			background_assets[0].render(renderer,-100+i*150,-100);
 			background_assets[0].angle*=-1;
-			background_assets[0].render(renderer,760-i*150,600);
+			background_assets[0].render(renderer,SCREEN_WIDTH-120-i*150,600);
 			background_assets[0].angle*=-1;
 		}
 		
@@ -215,7 +215,7 @@ void game_handler::background(bool down)
 				default:
 				case 1:
 				displayText.display("i  t urnsidewaystothesun",10,10+i*90,colors[0]);
-				displayText.display("keepmythoughtsfromeveryo n  e",200,30+i*90,colors[0]+i);
+				displayText.display("keepmyth oughtsfromeveryo n  e",200,30+i*90,colors[0]+i);
 				break;
 				case 2:
 				displayText.display("Afriendissomeonewhoisneverfar",10,10+i*90,colors[0]);
