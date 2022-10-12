@@ -516,8 +516,6 @@ class input_handler
 			SDL_GetMouseState( &mouseX, &mouseY );
 			 
 			const Uint8* keyStates = SDL_GetKeyboardState(NULL);
-			//if(keyStates[SDL_SCANCODE_SPACE])
-			//	x = MENU;
 			
 			while(SDL_PollEvent(e)) // grabs input events 
 			{			
@@ -604,6 +602,10 @@ class input_handler
 							case SDLK_DOWN:
 								x = DOWN;
 							break;
+							
+							case SDLK_f:
+							FullScreen = !FullScreen;
+							break;
 						}
 					break;
 	
@@ -611,7 +613,7 @@ class input_handler
 					case SDL_QUIT: // clicking the x window button
 						x = EXIT;
 					break;
-				
+					
 					default:
 					break;
 				}
@@ -622,6 +624,7 @@ class input_handler
 	
 		input_type state;
 		int mouseX, mouseY;
+		bool FullScreen = false;
 	private:
 		SDL_Event * e; // gets event inputs		
 };

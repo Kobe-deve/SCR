@@ -14,7 +14,7 @@ game_handler::game_handler(int x = -1)
 		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
 				
 		// create window 
-		window = SDL_CreateWindow( "Graphics", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		window = SDL_CreateWindow( "Stone Crawler PLUS", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 		if(window != NULL)
 		{
 			// creates renderer
@@ -319,6 +319,16 @@ void game_handler::runSystem()
 	// handle game system 
 		if(currentGame != NULL)
 			currentGame->handler();	
+			
+	// full screen option
+		if(input.FullScreen)
+		{
+			SDL_SetWindowFullscreen(window, SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP);
+		}
+		else
+		{
+			SDL_SetWindowFullscreen(window, SDL_WINDOW_SHOWN);
+		}
 			
 	// displaying images 
 		SDL_RenderPresent(renderer);
