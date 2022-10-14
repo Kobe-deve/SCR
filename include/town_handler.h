@@ -25,15 +25,12 @@ class town : public system_handler
 		max_y = 100;
 	
 		
-		numBuildings = 10;
+		numBuildings = 1;
 		
-		for(int i=1;i<numBuildings-1;i++)
-		{
-			buildingCoords[i][0] = i*10;
-			buildingCoords[i][1] = i*10;
-			buildingCoords[i][2] = 7;
-			buildingCoords[i][3] = 5;	
-		}			
+		buildingCoords[0][0] = 52;
+		buildingCoords[0][1] = 52;
+		buildingCoords[0][2] = 7;
+		buildingCoords[0][3] = 5;		
 	}
 	
 	void display() override
@@ -65,17 +62,17 @@ class town : public system_handler
 				for(i=0;i<numBuildings;i++)
 				{
 					if((buildingCoords[i][0] <= x && x <= buildingCoords[i][0]+buildingCoords[i][2])
-					   && (buildingCoords[i][1] <= y && y <= buildingCoords[i][1]+buildingCoords[i][3]))
+					   || (buildingCoords[i][1] <= y && y <= buildingCoords[i][1]+buildingCoords[i][3])
+					   || (x == buildingCoords[i][0]+buildingCoords[i][2]+1 && (buildingCoords[i][1] <= y && y <= buildingCoords[i][1]+buildingCoords[i][3])))
 					   {
 							buildingSpot = true;
 							break;
 					   }
 				}
 				
-				
 				if(z == 1 && buildingSpot && (buildingCoords[i][0] == x && buildingCoords[i][1] == y))
 					building.render(main_game->renderer,cameraX+(y*20*scale)+(x*20*scale),cameraY-(x*10*scale)+(y*10*scale)-(367*scale));
-				else if(z == 1 && pX == x && pY == y) 
+				else if(!buildingSpot && z == 1 && pX == x && pY == y) 
 				{
 					// display player 
 					if(!loadIn && !switchOut) // if everything is loaded in
@@ -101,7 +98,7 @@ class town : public system_handler
 						}
 					}
 				}
-				else if(z == 1)// other party members 
+				else if(!buildingSpot && z == 1)// other party members 
 				{
 					for(int i=0;i<numParty-1;i++)
 					{
