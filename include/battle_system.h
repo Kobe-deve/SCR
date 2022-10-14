@@ -56,7 +56,6 @@ class battle : public system_handler
 			menu = image("resources/sprites/battle/battle_menu.png",g->renderer);
 			party_menu = image("resources/sprites/battle/party_menu.png",g->renderer);
 			endHeart = image("resources/sprites/battle/heart.png",g->renderer);
-			player_port = image("resources/sprites/battle/player_portrait.png",g->renderer);			
 			cursor = image("resources/sprites/battle/target.png",g->renderer);
 			autoBatIcon = image("resources/sprites/battle/auto.png",g->renderer);	
 			
@@ -815,8 +814,7 @@ class battle : public system_handler
 			area.deallocate();
 			menu.deallocate();
 			party_menu.deallocate();
-			endHeart.deallocate();
-			player_port.deallocate();			
+			endHeart.deallocate();			
 			cursor.deallocate();
 			autoBatIcon.deallocate();
 			
@@ -871,7 +869,6 @@ class battle : public system_handler
 			image textArea;
 			image menu;
 			image party_menu;
-			image player_port;
 			
 			image autoBatIcon;
 			

@@ -22,8 +22,18 @@ class town : public system_handler
 		loadIn = true;
 			
 		max_x = 100;
-		max_y = 100;	
-			
+		max_y = 100;
+	
+		
+		numBuildings = 10;
+		
+		for(int i=1;i<numBuildings-1;i++)
+		{
+			buildingCoords[i][0] = i*10;
+			buildingCoords[i][1] = i*10;
+			buildingCoords[i][2] = 7;
+			buildingCoords[i][3] = 5;	
+		}			
 	}
 	
 	void display() override
@@ -38,17 +48,34 @@ class town : public system_handler
 		}
 			
 		// go through data of the floor the player is on to display dungeon
+		
+		for(int z=0;z<2;z++)
+		{
 		for(int y=1;y<max_y;y++)
 		{
 			for(int x=max_x-1;x>=0;x--)
 			{
+				bool buildingSpot = false;
+				int i;
+				
 				// display specific block
 				renderRect = {160,0,40,40};
 				
-				brick.render(main_game->renderer,cameraX+(y*20*scale)+(x*20*scale),cameraY-(x*10*scale)+(y*10*scale),&renderRect);
+				// display buildings
+				for(i=0;i<numBuildings;i++)
+				{
+					if((buildingCoords[i][0] <= x && x <= buildingCoords[i][0]+buildingCoords[i][2])
+					   && (buildingCoords[i][1] <= y && y <= buildingCoords[i][1]+buildingCoords[i][3]))
+					   {
+							buildingSpot = true;
+							break;
+					   }
+				}
 				
-				// display characters 
-				if(pX == x && pY == y)
+				
+				if(z == 1 && buildingSpot && (buildingCoords[i][0] == x && buildingCoords[i][1] == y))
+					building.render(main_game->renderer,cameraX+(y*20*scale)+(x*20*scale),cameraY-(x*10*scale)+(y*10*scale)-(367*scale));
+				else if(z == 1 && pX == x && pY == y) 
 				{
 					// display player 
 					if(!loadIn && !switchOut) // if everything is loaded in
@@ -74,7 +101,7 @@ class town : public system_handler
 						}
 					}
 				}
-				else // other party members 
+				else if(z == 1)// other party members 
 				{
 					for(int i=0;i<numParty-1;i++)
 					{
@@ -122,9 +149,12 @@ class town : public system_handler
 					player.setColor(255,255,255);
 					b_player.setColor(255,255,255);		
 				}
-		
+				else if(z==0)
+					brick.render(main_game->renderer,cameraX+(y*20*scale)+(x*20*scale),cameraY-(x*10*scale)+(y*10*scale),&renderRect);
+				
 			}	
-		}	
+		}
+		}		
 		
 		// displaying dialogue
 		if(dialogue)
@@ -163,6 +193,18 @@ class town : public system_handler
 		}
 	}
 	
+	bool buildingInSpot(int x, int y)
+	{
+		for(int i=0;i<numBuildings;i++)
+		{
+			// start battle if enemy on player coord
+			if((buildingCoords[i][0] <= x && x <= buildingCoords[i][0]+buildingCoords[i][2])
+			    && (buildingCoords[i][1] <= y && y <= buildingCoords[i][1]+buildingCoords[i][3]))
+				return true;
+		}
+		return false;
+	}
+	
 	void handler() override
 	{
 		if(!loadIn && !switchOut)
@@ -172,9 +214,11 @@ class town : public system_handler
 				case UP:
 				direction = NORTH;
 				if((pY != 1))
-					{
+				{
 					partyMovementUpdate();
 					pY--;
+					if(buildingInSpot(pX,pY))
+						pY++;
 				}
 				break;
 				case LEFT:
@@ -183,6 +227,8 @@ class town : public system_handler
 				{
 					partyMovementUpdate();
 					pX--;
+					if(buildingInSpot(pX,pY))
+						pX++;
 				}
 				break;
 				case RIGHT:
@@ -191,6 +237,8 @@ class town : public system_handler
 				{
 					partyMovementUpdate();
 					pX++;
+					if(buildingInSpot(pX,pY))
+						pX--;
 				}
 				break;
 				case DOWN:
@@ -199,12 +247,22 @@ class town : public system_handler
 				{
 					partyMovementUpdate();
 					pY++;
+					if(buildingInSpot(pX,pY))
+						pY--;
 				}
 				break;
 				case SELECT:
+				if(scale > 1)
+					scale--;
+				brick.scale = scale;
+				building.scale = scale;	
 				break;
 					
 				case CANCEL:
+				if(scale < 4)
+					scale++;
+				brick.scale = scale;
+				building.scale = scale;	
 				break;
 			}	
 		}
@@ -226,7 +284,12 @@ class town : public system_handler
 		// for rendering specific blocks from the block image 
 		SDL_Rect renderRect = {0,0,40,40};
 		
+		// building sprites
 		image building;
+		
+		// keeping track of buildings 
+		int numBuildings = 0; 
+		int buildingCoords[10][4] = {}; // (x,y,w,h)
 		
 		
 		// variables used for loading in a new floor 

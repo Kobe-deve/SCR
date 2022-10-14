@@ -70,9 +70,12 @@ class stats
 				defense = rand()%maxDef+1;
 				agility = rand()%maxAgil+1;
 				
-				portCoords[0] = 67;
-				portCoords[1] = 226;
-				sprite = image("resources/sprites/battle/Monster/kid.png",g);
+				//portCoords[0] = 67;
+				//portCoords[1] = 226;
+				//sprite = image("resources/sprites/battle/Monster/kid.png",g);
+				portCoords[0] = 0;
+				portCoords[1] = 0;
+				sprite = image("resources/sprites/battle/player_portrait.png",g);
 				
 				abilities[0] = {SLASH, "Slash"};
 				abilities[1] = {PIERCE, "Pierce"};
