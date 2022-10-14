@@ -61,9 +61,9 @@ class town : public system_handler
 				// display buildings
 				for(i=0;i<numBuildings;i++)
 				{
-					if((buildingCoords[i][0] <= x && x <= buildingCoords[i][0]+buildingCoords[i][2])
-					   || (buildingCoords[i][1] <= y && y <= buildingCoords[i][1]+buildingCoords[i][3])
-					   || (x == buildingCoords[i][0]+buildingCoords[i][2]+1 && (buildingCoords[i][1] <= y && y <= buildingCoords[i][1]+buildingCoords[i][3])))
+					if(((buildingCoords[i][0] <= x && x <= buildingCoords[i][0]+buildingCoords[i][2])
+					   && (buildingCoords[i][1] <= y && y <= buildingCoords[i][1]+buildingCoords[i][3]))
+					   || (x == (buildingCoords[i][0]+buildingCoords[i][2]+1) && (buildingCoords[i][1] <= y && y <= buildingCoords[i][1]+buildingCoords[i][3])))
 					   {
 							buildingSpot = true;
 							break;
