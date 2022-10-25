@@ -2,6 +2,13 @@
 #include "game_handler.h"
 #endif
 
+struct buildingObject
+{
+	int coords[2];
+	int base_size[2];
+	int type;
+};
+
 class town : public system_handler
 {
 	public:
@@ -17,20 +24,22 @@ class town : public system_handler
 		brick.scale = scale;
 		textbackground = image("resources/sprites/dungeon/backoftext.png",g->renderer);
 		
-		building = image("resources/sprites/test_building.png",g->renderer);
-		building.scale = scale;	
+		building1 = image("resources/sprites/test_building.png",g->renderer);
+		building1.scale = scale;	
+		building2 = image("resources/sprites/test_building_2.png",g->renderer);
+		building2.scale = scale;	
 		loadIn = true;
 			
 		max_x = 100;
 		max_y = 100;
 	
-		
 		numBuildings = 1;
 		
-		buildingCoords[0][0] = 52;
-		buildingCoords[0][1] = 52;
-		buildingCoords[0][2] = 7;
-		buildingCoords[0][3] = 5;		
+		buildings[0].type = 1;
+		buildings[0].coords[0] = 52;
+		buildings[0].coords[1] = 52;
+		buildings[0].base_size[0] = 7;
+		buildings[0].base_size[1] = 5;		
 	}
 	
 	void display() override
@@ -61,17 +70,27 @@ class town : public system_handler
 				// display buildings
 				for(i=0;i<numBuildings;i++)
 				{
-					if(((buildingCoords[i][0] <= x && x <= buildingCoords[i][0]+buildingCoords[i][2])
-					   && (buildingCoords[i][1] <= y && y <= buildingCoords[i][1]+buildingCoords[i][3]))
-					   || (x == (buildingCoords[i][0]+buildingCoords[i][2]+1) && (buildingCoords[i][1] <= y && y <= buildingCoords[i][1]+buildingCoords[i][3])))
+					if((buildings[i].coords[0] <= x && x <= buildings[i].coords[0]+buildings[i].base_size[0])
+					   && (buildings[i].coords[1] <= y && y <= buildings[i].coords[1]+buildings[i].base_size[1])
+					   || (x == buildings[i].coords[0]+buildings[i].base_size[0]+1 && (buildings[i].coords[1] <= y && y <= buildings[i].coords[1]+buildings[i].base_size[1])))
 					   {
 							buildingSpot = true;
 							break;
 					   }
 				}
 				
-				if(z == 1 && buildingSpot && (buildingCoords[i][0] == x && buildingCoords[i][1] == y))
-					building.render(main_game->renderer,cameraX+(y*20*scale)+(x*20*scale),cameraY-(x*10*scale)+(y*10*scale)-(367*scale));
+				if(z == 1 && buildingSpot && (buildings[i].coords[0] == x && buildings[i].coords[1] == y))
+				{
+					switch(buildings[i].type)
+					{
+						case 1:
+						building1.render(main_game->renderer,cameraX+(y*20*scale)+(x*20*scale),cameraY-(x*10*scale)+(y*10*scale)-(367*scale));
+						break;
+						case 2:
+						building2.render(main_game->renderer,cameraX+(y*20*scale)+(x*20*scale),cameraY-(x*10*scale)+(y*10*scale)-(367*scale));
+						break;
+					}
+				}
 				else if(!buildingSpot && z == 1 && pX == x && pY == y) 
 				{
 					// display player 
@@ -195,8 +214,8 @@ class town : public system_handler
 		for(int i=0;i<numBuildings;i++)
 		{
 			// start battle if enemy on player coord
-			if((buildingCoords[i][0] <= x && x <= buildingCoords[i][0]+buildingCoords[i][2])
-			    && (buildingCoords[i][1] <= y && y <= buildingCoords[i][1]+buildingCoords[i][3]))
+			if((buildings[i].coords[0] <= x && x <= buildings[i].coords[0]+buildings[i].base_size[0])
+			    && (buildings[i].coords[1] <= y && y <= buildings[i].coords[1]+buildings[i].base_size[1]))
 				return true;
 		}
 		return false;
@@ -252,14 +271,30 @@ class town : public system_handler
 				if(scale > 1)
 					scale--;
 				brick.scale = scale;
-				building.scale = scale;	
+				building1.scale = scale;
+				building2.scale = scale;	
 				break;
+					
+				case MENU:
+				
+				buildings[numBuildings].coords[0] = pX+3;
+				buildings[numBuildings].coords[1] = pY+3;
+
+				buildings[numBuildings].base_size[0] = 7;
+				buildings[numBuildings].base_size[1] = 5;	
+				
+				buildings[numBuildings].type = 2;	
+				numBuildings++;	
+				
+				cout << "\n" << numBuildings;
+				break;				
 					
 				case CANCEL:
 				if(scale < 4)
 					scale++;
 				brick.scale = scale;
-				building.scale = scale;	
+				building1.scale = scale;
+				building2.scale = scale;	
 				break;
 			}	
 		}
@@ -271,7 +306,8 @@ class town : public system_handler
 		b_player.deallocate();
 		brick.deallocate();  
 		textbackground.deallocate();
-		building.deallocate();
+		building1.deallocate();
+		building2.deallocate();
 	}
 	
 	private:
@@ -282,12 +318,13 @@ class town : public system_handler
 		SDL_Rect renderRect = {0,0,40,40};
 		
 		// building sprites
-		image building;
+		image building1;
+		image building2;
 		
 		// keeping track of buildings 
 		int numBuildings = 0; 
-		int buildingCoords[10][4] = {}; // (x,y,w,h)
-		
+		int buildingCoords[100][4] = {}; // (x,y,w,h)
+		buildingObject buildings[100] = {};
 		
 		// variables used for loading in a new floor 
 		bool loadIn = false;
