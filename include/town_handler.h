@@ -209,6 +209,7 @@ class town : public system_handler
 		}
 	}
 	
+	// building collission detection
 	bool buildingInSpot(int x, int y)
 	{
 		for(int i=0;i<numBuildings;i++)
@@ -219,6 +220,20 @@ class town : public system_handler
 				return true;
 		}
 		return false;
+	}
+	
+	// door detection 
+	bool doorInSpot(int x,int y)
+	{
+		for(int i=0;i<numBuildings;i++)
+		{
+			// start battle if enemy on player coord
+			if((buildings[i].coords[0]+3 <= x && x <= buildings[i].coords[0]+buildings[i].base_size[0]-3)
+			    && y <= buildings[i].coords[1]+buildings[i].base_size[1])
+				return true;
+		}
+		return false;
+	
 	}
 	
 	void handler() override
@@ -233,6 +248,9 @@ class town : public system_handler
 				{
 					partyMovementUpdate();
 					pY--;
+					
+					door = doorInSpot(pX,pY);
+					
 					if(buildingInSpot(pX,pY))
 						pY++;
 				}
@@ -243,6 +261,9 @@ class town : public system_handler
 				{
 					partyMovementUpdate();
 					pX--;
+					
+					door = doorInSpot(pX,pY);
+					
 					if(buildingInSpot(pX,pY))
 						pX++;
 				}
@@ -253,6 +274,9 @@ class town : public system_handler
 				{
 					partyMovementUpdate();
 					pX++;
+					
+					door = doorInSpot(pX,pY);
+					
 					if(buildingInSpot(pX,pY))
 						pX--;
 				}
@@ -263,6 +287,9 @@ class town : public system_handler
 				{
 					partyMovementUpdate();
 					pY++;
+					
+					door = doorInSpot(pX,pY);
+					
 					if(buildingInSpot(pX,pY))
 						pY--;
 				}
@@ -298,6 +325,9 @@ class town : public system_handler
 				break;
 			}	
 		}
+		
+		if(door)
+			endSystemHandler();
 	}
 	
 	void deallocate()
@@ -309,6 +339,11 @@ class town : public system_handler
 		building1.deallocate();
 		building2.deallocate();
 	}
+	
+	// did the player enter a building?
+	bool door = false;
+	// what building did the player enter?
+	int buildingKey = 0;
 	
 	private:
 		// is there dialogue happening?
