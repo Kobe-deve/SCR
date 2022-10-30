@@ -230,8 +230,10 @@ class town : public system_handler
 		{
 			// start battle if enemy on player coord
 			if((buildings[i].coords[0]+3 <= x && x <= buildings[i].coords[0]+buildings[i].base_size[0]-3)
-			    && y <= buildings[i].coords[1]+buildings[i].base_size[1])
+			    && y == buildings[i].coords[1]+buildings[i].base_size[1])
 			{
+				// what building did the player enter? 
+				buildingKey = buildings[i].type;
 				return true;
 			}
 		}
