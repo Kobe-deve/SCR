@@ -193,6 +193,7 @@ class town : public system_handler
 			megaAlpha-=5;
 	}
 	
+	// moving party members
 	void partyMovementUpdate()
 	{
 		if(numParty > 1)
@@ -230,7 +231,9 @@ class town : public system_handler
 			// start battle if enemy on player coord
 			if((buildings[i].coords[0]+3 <= x && x <= buildings[i].coords[0]+buildings[i].base_size[0]-3)
 			    && y <= buildings[i].coords[1]+buildings[i].base_size[1])
+			{
 				return true;
+			}
 		}
 		return false;
 	
@@ -330,8 +333,25 @@ class town : public system_handler
 			endSystemHandler();
 	}
 	
+	// allocating sprites back into memory 
+	void allocateSprites()
+	{
+		player = image("resources/sprites/dungeon/kid.png",main_game->renderer);
+		b_player = image("resources/sprites/dungeon/back_kid.png",main_game->renderer);
+		brick = image("resources/sprites/dungeon/brick.png",main_game->renderer);
+		brick.scale = scale;
+		textbackground = image("resources/sprites/dungeon/backoftext.png",main_game->renderer);
+		
+		building1 = image("resources/sprites/test_building.png",main_game->renderer);
+		building1.scale = scale;	
+		building2 = image("resources/sprites/test_building_2.png",main_game->renderer);
+		building2.scale = scale;	
+	}
+	
+	// dellocating sprites from memory 
 	void deallocate()
 	{
+		door = false;
 		player.deallocate(); 
 		b_player.deallocate();
 		brick.deallocate();  
