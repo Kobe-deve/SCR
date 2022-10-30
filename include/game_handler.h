@@ -61,11 +61,34 @@ game_handler::game_handler(int x = -1)
 	displayText = text(renderer,0);
 };
 		
+// dellocates background assets		
+void game_handler::deallocateBackground(int type)
+{
+	switch(type)
+	{
+		case 0:
+		background_assets[0].deallocate();
+		background_assets[1].deallocate();
+		break;
+		case 1:
+		break;
+		case 3:
+		background_assets[0].deallocate();
+		break;
+		case 5:
+		background_assets[0].deallocate();
+		background_assets[1].deallocate();
+		background_assets[2].deallocate();
+		break;
+		default:
+		break;
+		
+	}
+}
+
 // loads background assets 
 void game_handler::loadBackground(int type)
 {
-	if(background_assets != NULL)
-		delete background_assets;
 	switch(type)
 	{
 		case 0:
@@ -280,6 +303,7 @@ void game_handler::background(bool down)
 		megaAlpha+=5;
 	else if(switchOut && megaAlpha == 0)
 	{
+		deallocateBackground(b);
 		b = switchTo;
 		megaAlpha = 255;
 		switchOut = false;

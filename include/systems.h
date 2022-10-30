@@ -660,6 +660,9 @@ class game_handler
 		// loads background assets 
 		void loadBackground(int type);
 		
+		// deallocate background assets
+		void deallocateBackground(int type);
+		
 		// main background in the game 
 		void background();
 		
