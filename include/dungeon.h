@@ -40,7 +40,6 @@ class dungeon_crawling : public system_handler
 			brick->scale = scale;
 			textbackground = new image("resources/sprites/dungeon/backoftext.png",g->renderer);
 				
-			
 			if(fileload.is_open())
 			{
 				// obtain basic dungeon info 
@@ -459,18 +458,6 @@ class dungeon_crawling : public system_handler
 			Mix_FreeChunk(moverSound);
 			delete moverSound;
 			
-			
-			// delete map 
-			for(int i=0;i<max_x;i++)
-			{
-				for(int j=0;j<max_y;j++)
-				{
-					delete map[i][j];
-					map[i][j] = nullptr;
-				}
-				delete map[i];
-				map[i] = nullptr;
-			}
 			delete map;
 			map = nullptr;
 		}
