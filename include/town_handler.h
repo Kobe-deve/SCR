@@ -331,8 +331,6 @@ class town : public system_handler
 			}	
 		}
 		
-		if(door)
-			endSystemHandler();
 	}
 	
 	// allocating sprites back into memory 

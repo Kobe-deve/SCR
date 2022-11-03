@@ -824,6 +824,8 @@ class battle : public system_handler
 			slash.deallocate();
 			combat_info.deallocate();
 			
+			Mix_FreeChunk(hit);
+			
 			main_game->displayText.black = false;
 		}
 		

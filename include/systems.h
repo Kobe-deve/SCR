@@ -122,7 +122,7 @@ class timer
 		}
 		bool paused = false; // is the timer paused? 
 		bool started = false; // has the timer started? 
-	
+		
 	private:
 		// ticks used for timer 
 		Uint32 startTicks = 0;
@@ -226,6 +226,9 @@ class text
 			{
 				SDL_DestroyTexture(letters[i]);
 			}
+			letters.clear();
+			delete renderQuad;
+			TTF_CloseFont( font );
 		}
 
 		int size = START_SIZE; // size of text 
@@ -318,6 +321,7 @@ class image
 		void deallocate()
 		{
 			SDL_DestroyTexture(texture);
+			texture = NULL;
 		}
 		
 		// get texture

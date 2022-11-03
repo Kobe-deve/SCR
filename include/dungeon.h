@@ -16,32 +16,33 @@ class dungeon_crawling : public system_handler
 		// new instance of dungeon_crawling, loading an existing file for the map layout 
 		dungeon_crawling(game_handler * g, string filename)
 		{
+			moverSound = Mix_LoadWAV("resources/music/sounds/moving_floors.wav");
 			// get dungeon file from memory
 			fstream fileload("resources/maps/" + filename + ".txt", ios_base::in);
 			string reader; 
 			
+			// get the dungeon crawling system running 
+			main_game = g;
+			
+			// party member info 
+			for(int i=0;i<numParty-1;i++)
+			{
+				partFace[i] = SOUTH;
+				partCoords[i][0] = pX;
+				partCoords[i][1] = pY-(i+1);
+			}
+				
+			// load images 
+			enemy = new image("resources/sprites/dungeon/test_enemy.png",g->renderer);
+			player = new image("resources/sprites/dungeon/kid.png",g->renderer);
+			b_player = new image("resources/sprites/dungeon/back_kid.png",g->renderer);
+			brick = new image("resources/sprites/dungeon/brick.png",g->renderer);
+			brick->scale = scale;
+			textbackground = new image("resources/sprites/dungeon/backoftext.png",g->renderer);
+				
+			
 			if(fileload.is_open())
 			{
-				// get the dungeon crawling system running 
-				main_game = g;
-			
-				// party member info 
-				//numParty = 3;
-				for(int i=0;i<numParty-1;i++)
-				{
-					partFace[i] = SOUTH;
-					partCoords[i][0] = pX;
-					partCoords[i][1] = pY-(i+1);
-				}
-				
-				// load images 
-				enemy = image("resources/sprites/dungeon/test_enemy.png",g->renderer);
-				player = image("resources/sprites/dungeon/kid.png",g->renderer);
-				b_player = image("resources/sprites/dungeon/back_kid.png",g->renderer);
-				brick = image("resources/sprites/dungeon/brick.png",g->renderer);
-				brick.scale = scale;
-				textbackground = image("resources/sprites/dungeon/backoftext.png",g->renderer);
-				
 				// obtain basic dungeon info 
 				fileload >> max_z;
 				fileload >> max_x;
@@ -83,6 +84,7 @@ class dungeon_crawling : public system_handler
 			newGame = true;
 			loadIn = true;
 			
+			renderRect = {0,0,40,40};
 			moveEnemyTimer.start();
 		}
 		
@@ -95,9 +97,9 @@ class dungeon_crawling : public system_handler
 			
 			if(loadIn || switchOut)
 			{
-				brick.setAlpha(megaAlpha);
+				brick->setAlpha(megaAlpha);
 				if(megaAlpha <= 100)
-					enemy.setAlpha(megaAlpha);
+					enemy->setAlpha(megaAlpha);
 			}
 			
 			// go through data of the floor the player is on to display dungeon
@@ -111,26 +113,26 @@ class dungeon_crawling : public system_handler
 					// vision brightness
 					if((pY-1 == y || pY == y || pY+1 ==y) && (pX-1 == x || pX == x || pX+1 ==x))
 					{
-						enemy.setColor(255,255,255);
+						enemy->setColor(255,255,255);
 						if(!loadIn && !switchOut)	
-							enemy.setAlpha(255);
-						brick.setColor(255,255,255);
+							enemy->setAlpha(255);
+						brick->setColor(255,255,255);
 					}
 					else
 					{
-						enemy.setColor(100,100,100);
+						enemy->setColor(100,100,100);
 						if(!loadIn && !switchOut)	
-							enemy.setAlpha(100);
-						brick.setColor(100,100,100);
+							enemy->setAlpha(100);
+						brick->setColor(100,100,100);
 					}
 					
-					brick.render(main_game->renderer,cameraX+(y*20*scale)+(x*20*scale),cameraY-(x*10*scale)+(y*10*scale),&renderRect);
+					brick->render(main_game->renderer,cameraX+(y*20*scale)+(x*20*scale),cameraY-(x*10*scale)+(y*10*scale),&renderRect);
 					
 					// display enemies 
 					for(int i=0;i<numEnemies;i++)
 					{
 						if(movableEnemies[i] && coords[i][0] == x && coords[i][1] == y )
-							enemy.render(main_game->renderer,cameraX+(coords[i][1]*20*scale)+(coords[i][0]*20*scale)+30,cameraY-(coords[i][0]*10*scale)+(coords[i][1]*10*scale)-70);		
+							enemy->render(main_game->renderer,cameraX+(coords[i][1]*20*scale)+(coords[i][0]*20*scale)+30,cameraY-(coords[i][0]*10*scale)+(coords[i][1]*10*scale)-70);		
 					}
 						
 					if(pX == x && pY == y)
@@ -141,26 +143,26 @@ class dungeon_crawling : public system_handler
 							switch(direction)
 							{
 								case NORTH:
-								b_player.flip = SDL_FLIP_HORIZONTAL;
-								b_player.render(main_game->renderer,cameraX+(pY*20*scale)+(pX*20*scale)+30,cameraY-(pX*10*scale)+(pY*10*scale)-70);
+								b_player->flip = SDL_FLIP_HORIZONTAL;
+								b_player->render(main_game->renderer,cameraX+(pY*20*scale)+(pX*20*scale)+30,cameraY-(pX*10*scale)+(pY*10*scale)-70);
 								break;
 								case EAST:
-								b_player.flip = SDL_FLIP_NONE;
-								b_player.render(main_game->renderer,cameraX+(pY*20*scale)+(pX*20*scale)+30,cameraY-(pX*10*scale)+(pY*10*scale)-70);
+								b_player->flip = SDL_FLIP_NONE;
+								b_player->render(main_game->renderer,cameraX+(pY*20*scale)+(pX*20*scale)+30,cameraY-(pX*10*scale)+(pY*10*scale)-70);
 								break;
 								case WEST:
-								player.flip = SDL_FLIP_HORIZONTAL;
-								player.render(main_game->renderer,cameraX+(pY*20*scale)+(pX*20*scale)+30,cameraY-(pX*10*scale)+(pY*10*scale)-70);
+								player->flip = SDL_FLIP_HORIZONTAL;
+								player->render(main_game->renderer,cameraX+(pY*20*scale)+(pX*20*scale)+30,cameraY-(pX*10*scale)+(pY*10*scale)-70);
 								break;
 								case SOUTH:
-								player.flip = SDL_FLIP_NONE;
-								player.render(main_game->renderer,cameraX+(pY*20*scale)+(pX*20*scale)+30,cameraY-(pX*10*scale)+(pY*10*scale)-70);
+								player->flip = SDL_FLIP_NONE;
+								player->render(main_game->renderer,cameraX+(pY*20*scale)+(pX*20*scale)+30,cameraY-(pX*10*scale)+(pY*10*scale)-70);
 								break;
 							}
 						}
 						else // moving between floors or loading in/out of dungeon crawling 
 						{
-							player.render(main_game->renderer,cameraX+(pY*20*scale)+(pX*20*scale)+30,cameraY-(pX*10*scale)+(pY*10*scale)-70 + moveAnimation);					
+							player->render(main_game->renderer,cameraX+(pY*20*scale)+(pX*20*scale)+30,cameraY-(pX*10*scale)+(pY*10*scale)-70 + moveAnimation);					
 							
 							if(!newGame)
 							{
@@ -185,14 +187,14 @@ class dungeon_crawling : public system_handler
 								switch(i)
 								{
 									case 0:
-									player.setColor(255,0,0);
-									b_player.setColor(255,0,0);
+									player->setColor(255,0,0);
+									b_player->setColor(255,0,0);
 									case 1:
-									player.setColor(0,255,0);
-									b_player.setColor(0,255,0);
+									player->setColor(0,255,0);
+									b_player->setColor(0,255,0);
 									case 2:
-									player.setColor(0,0,255);
-									b_player.setColor(0,0,255);
+									player->setColor(0,0,255);
+									b_player->setColor(0,0,255);
 									break;
 								}
 								// display player 
@@ -201,26 +203,26 @@ class dungeon_crawling : public system_handler
 									switch(partFace[i])
 									{
 										case NORTH:
-										b_player.flip = SDL_FLIP_HORIZONTAL;
-										b_player.render(main_game->renderer,cameraX+(partCoords[i][1]*20*scale)+(partCoords[i][0]*20*scale)+30,cameraY-(partCoords[i][0]*10*scale)+(partCoords[i][1]*10*scale)-70);
+										b_player->flip = SDL_FLIP_HORIZONTAL;
+										b_player->render(main_game->renderer,cameraX+(partCoords[i][1]*20*scale)+(partCoords[i][0]*20*scale)+30,cameraY-(partCoords[i][0]*10*scale)+(partCoords[i][1]*10*scale)-70);
 										break;
 										case EAST:
-										b_player.flip = SDL_FLIP_NONE;
-										b_player.render(main_game->renderer,cameraX+(partCoords[i][1]*20*scale)+(partCoords[i][0]*20*scale)+30,cameraY-(partCoords[i][0]*10*scale)+(partCoords[i][1]*10*scale)-70);
+										b_player->flip = SDL_FLIP_NONE;
+										b_player->render(main_game->renderer,cameraX+(partCoords[i][1]*20*scale)+(partCoords[i][0]*20*scale)+30,cameraY-(partCoords[i][0]*10*scale)+(partCoords[i][1]*10*scale)-70);
 										break;
 										case WEST:
-										player.flip = SDL_FLIP_HORIZONTAL;
-										player.render(main_game->renderer,cameraX+(partCoords[i][1]*20*scale)+(partCoords[i][0]*20*scale)+30,cameraY-(partCoords[i][0]*10*scale)+(partCoords[i][1]*10*scale)-70);
+										player->flip = SDL_FLIP_HORIZONTAL;
+										player->render(main_game->renderer,cameraX+(partCoords[i][1]*20*scale)+(partCoords[i][0]*20*scale)+30,cameraY-(partCoords[i][0]*10*scale)+(partCoords[i][1]*10*scale)-70);
 										break;
 										case SOUTH:
-										player.flip = SDL_FLIP_NONE;
-										player.render(main_game->renderer,cameraX+(partCoords[i][1]*20*scale)+(partCoords[i][0]*20*scale)+30,cameraY-(partCoords[i][0]*10*scale)+(partCoords[i][1]*10*scale)-70);
+										player->flip = SDL_FLIP_NONE;
+										player->render(main_game->renderer,cameraX+(partCoords[i][1]*20*scale)+(partCoords[i][0]*20*scale)+30,cameraY-(partCoords[i][0]*10*scale)+(partCoords[i][1]*10*scale)-70);
 										break;
 									}
 								}
 								else // moving between floors or loading in/out of dungeon crawling 
 								{
-									player.render(main_game->renderer,cameraX+(partCoords[i][1]*20*scale)+(partCoords[i][0]*20*scale)+30,cameraY-(partCoords[i][0]*10*scale)+(partCoords[i][1]*10*scale)-70+ moveAnimation);
+									player->render(main_game->renderer,cameraX+(partCoords[i][1]*20*scale)+(partCoords[i][0]*20*scale)+30,cameraY-(partCoords[i][0]*10*scale)+(partCoords[i][1]*10*scale)-70+ moveAnimation);
 
 									if(!newGame)
 									{
@@ -238,8 +240,8 @@ class dungeon_crawling : public system_handler
 								break;
 							}
 						}
-						player.setColor(255,255,255);
-						b_player.setColor(255,255,255);		
+						player->setColor(255,255,255);
+						b_player->setColor(255,255,255);		
 					}
 				}	
 			}	
@@ -247,7 +249,7 @@ class dungeon_crawling : public system_handler
 			// displaying dialogue
 			if(dialogue)
 			{
-				textbackground.render(main_game->renderer,25,500);
+				textbackground->render(main_game->renderer,25,500);
 			}
 			
 			// loading into new floor
@@ -299,6 +301,7 @@ class dungeon_crawling : public system_handler
 				megaAlpha-=5;
 		}
 		
+		
 		void partyMovementUpdate()
 		{
 			if(numParty > 1)
@@ -314,6 +317,7 @@ class dungeon_crawling : public system_handler
 				partCoords[0][0] = pX;			
 			}
 		}
+		
 		
 		// input handling
 		void handler() override
@@ -428,24 +432,56 @@ class dungeon_crawling : public system_handler
 					moveEnemyTimer.start();	
 				}
 			}
+			
 		}
 	
 		void deallocate()
 		{
-			player.deallocate(); 
-			b_player.deallocate();
-			enemy.deallocate();
-			brick.deallocate();  
-			textbackground.deallocate();
+			player->deallocate(); 
+			b_player->deallocate();
+			enemy->deallocate();
+			brick->deallocate();  
+			textbackground->deallocate();
+			moveEnemyTimer.stop();
+			
+			delete player;
+			delete b_player;
+			delete enemy;
+			delete brick;
+			delete textbackground;
+			
+			player= nullptr;
+			b_player= nullptr;
+			enemy= nullptr;
+			brick= nullptr;
+			textbackground= nullptr;
+			
+			Mix_FreeChunk(moverSound);
+			delete moverSound;
+			
+			
+			// delete map 
+			for(int i=0;i<max_x;i++)
+			{
+				for(int j=0;j<max_y;j++)
+				{
+					delete map[i][j];
+					map[i][j] = nullptr;
+				}
+				delete map[i];
+				map[i] = nullptr;
+			}
+			delete map;
+			map = nullptr;
 		}
 	
 	private:
+		
 		// is there dialogue happening?
 		bool dialogue = false;
 	
 		// enemy handling 
 		timer moveEnemyTimer; // for moving enemies without input 
-		image enemy;
 		int numEnemies = 0; // number of enemies in the area 
 		int coords[10][2]; // position of enemies on the map 
 		bool movableEnemies[10]; // bool for enemies that the player hasn't met 
@@ -462,7 +498,7 @@ class dungeon_crawling : public system_handler
 		bool up = true;
 		
 		// for rendering specific blocks from the block image 
-		SDL_Rect renderRect = {0,0,40,40};
+		SDL_Rect renderRect;
 		
 		// map data in flexible char 3d array
 		char *** map;
@@ -488,19 +524,17 @@ class dungeon_crawling : public system_handler
 		// scale of images
 		int scale = 3;
 		
-		// image of dungeon blocks
-		image brick;  
-		
-		// player sprite 
-		image player; 
-		image b_player;
-		
-		// text background
-		image textbackground;
-		
 		// the direction the player is facing 
 		facing direction = SOUTH;
 	
+		// images
+		image * brick = NULL;  
+		image * enemy = NULL;
+		image * player = NULL; 
+		image * b_player = NULL;
+		image * textbackground = NULL; 
+		
 		// going up/down floor sound effect
-		Mix_Chunk * moverSound = Mix_LoadWAV("resources/music/sounds/moving_floors.wav"); 
+		Mix_Chunk * moverSound = NULL; 
+		
 };
