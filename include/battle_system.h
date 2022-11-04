@@ -66,7 +66,9 @@ class battle : public system_handler
 			party_menu.scale = 2;
 			area.scale = 2;
 			cursor.scale = 4;
-			
+
+			hit = Mix_LoadWAV("resources/music/sounds/attack_sound.wav"); 
+
 			// set up enemy information
 			switch(rand()%3+1)
 			{
@@ -826,6 +828,8 @@ class battle : public system_handler
 			
 			Mix_FreeChunk(hit);
 			
+			delete indivAlpha;
+			
 			main_game->displayText.black = false;
 		}
 		
@@ -930,5 +934,5 @@ class battle : public system_handler
 			bool inputGo = false;	
 		//--------------------misc------------------------
 			// damage sound effect 
-			Mix_Chunk * hit = Mix_LoadWAV("resources/music/sounds/attack_sound.wav"); 
+			Mix_Chunk * hit;
 };

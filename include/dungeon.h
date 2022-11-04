@@ -479,7 +479,8 @@ class dungeon_crawling : public system_handler
 			delete map;
 			map = nullptr;
 		}
-	
+		bool exitBuilding = false;
+		
 	private:
 		
 		// is there dialogue happening?
@@ -501,7 +502,6 @@ class dungeon_crawling : public system_handler
 		
 		bool newGame = false;
 		bool up = true;
-		bool exitBuilding = false;
 		
 		// for rendering specific blocks from the block image 
 		SDL_Rect renderRect;

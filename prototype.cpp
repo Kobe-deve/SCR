@@ -2,6 +2,7 @@
 #include "include/battle_system.h"
 #include "include/dungeon.h"
 #include "include/menu_system.h"
+#include "include/town_handler.h"
 
 #include "include/http_provider.h"
 
@@ -58,9 +59,10 @@ int main(int argc, char *argv[])
 					
 	// define game systems being used 		
 	title_screen * test1 = new title_screen(&game);
-	dungeon_crawling test2;
+	dungeon_crawling * test2 = nullptr;
 	battle * test3 = nullptr;
 	menu_system * test4 = nullptr;
+	town test5;
 	
 	game_over * go = nullptr;
 	
@@ -74,26 +76,52 @@ int main(int argc, char *argv[])
 			switch(test1->option)
 			{
 				default:
-				test2 = dungeon_crawling(&game,"test_floor");
-				game.switchBackground(3);
-				game.currentGame = &test2;
+				test5 = town(&game);
+				game.switchBackground(0);
+				game.currentGame = &test5;
 				test1->endSystem = false;
 				
-				Mix_FadeOutMusic(0); // stop current music 
-				game.music =  Mix_LoadMUS( "resources/music/test_dungeon.wav");
-				Mix_FadeInMusic(game.music, -1, 100); // fades into new music 
 				test1->deallocate();
 				delete test1;
 				test1 = nullptr;
 				break;
 			}
 		}
-		else if(test2.endSystem) // dungeon to battle system
+		else if(test5.door) // city to dungeon 
+		{
+			test5.deallocate();
+			switch(test5.buildingKey)
+			{
+				case 1:
+				test2 = new dungeon_crawling(&game,"test_floor");
+				break;
+				case 2:
+				test2 = new dungeon_crawling(&game,"test_floor_2");
+				break;
+			}
+			game.currentGame = test2;
+			
+			Mix_FadeOutMusic(0); // stop current music 
+			game.music =  Mix_LoadMUS( "resources/music/test_dungeon.wav");
+			Mix_FadeInMusic(game.music, -1, 100); // fades into new music 
+			game.switchBackground(5);		
+		}
+		else if(test2 != nullptr && test2->exitBuilding && test2->endSystem) // dungeon to city
+		{
+			test2->deallocate();
+			delete test2;
+			test2 = nullptr;
+			
+			test5.allocateSprites();
+			game.currentGame = &test5;
+			game.switchBackground(0);
+		}
+		else if(test2 != nullptr && !test2->exitBuilding && test2->endSystem) // dungeon to battle system
 		{
 			test3 = new battle(&game);
 			game.currentGame = test3;
 			game.switchBackground(5);
-			test2.endSystem = false;
+			test2->endSystem = false;
 			
 			Mix_FadeOutMusic(0); // stop current music 
 			switch(rand()%2+1)
@@ -107,7 +135,7 @@ int main(int argc, char *argv[])
 			}
 			Mix_FadeInMusic(game.music, -1, 1000); // fades into new music 
 		}
-		else if(game.currentGame == &test2 && !test2.endSystem && game.input.state == MENU) // dungeon to menu 
+		else if(test2 != nullptr && game.currentGame == test2 && !test2->endSystem && game.input.state == MENU) // dungeon to menu 
 		{
 			test4 = new menu_system(&game);
 			game.currentGame = test4;
@@ -121,7 +149,7 @@ int main(int argc, char *argv[])
 			delete test4;
 			test4 = nullptr;
 			
-			game.currentGame = &test2;
+			game.currentGame = test2;
 			game.switchBackground(3);
 		}
 		else if(test3 != nullptr && test3->endSystem) // battle to dungeon system
@@ -149,7 +177,7 @@ int main(int argc, char *argv[])
 			else // continue dungeon crawling 
 			{
 			
-				game.currentGame = &test2;
+				game.currentGame = test2;
 				game.switchBackground(3);
 			
 				Mix_FadeOutMusic(0); // stop current music 

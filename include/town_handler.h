@@ -33,13 +33,19 @@ class town : public system_handler
 		max_x = 100;
 		max_y = 100;
 	
-		numBuildings = 1;
+		numBuildings = 2;
 		
 		buildings[0].type = 1;
 		buildings[0].coords[0] = 52;
 		buildings[0].coords[1] = 52;
 		buildings[0].base_size[0] = 7;
-		buildings[0].base_size[1] = 5;		
+		buildings[0].base_size[1] = 5;	
+
+		buildings[1].type = 2;
+		buildings[1].coords[0] = 70;
+		buildings[1].coords[1] = 52;
+		buildings[1].base_size[0] = 7;
+		buildings[1].base_size[1] = 5;			
 	}
 	
 	void display() override
@@ -301,15 +307,16 @@ class town : public system_handler
 				}
 				break;
 				case SELECT:
-				if(scale > 1)
+				/*if(scale > 1)
 					scale--;
 				brick.scale = scale;
 				building1.scale = scale;
 				building2.scale = scale;	
+				*/
 				break;
 					
 				case MENU:
-				
+				/*
 				buildings[numBuildings].coords[0] = pX+3;
 				buildings[numBuildings].coords[1] = pY+3;
 
@@ -319,15 +326,16 @@ class town : public system_handler
 				buildings[numBuildings].type = 2;	
 				numBuildings++;	
 				
-				cout << "\n" << numBuildings;
+				cout << "\n" << numBuildings;*/
 				break;				
 					
 				case CANCEL:
+				/*
 				if(scale < 4)
 					scale++;
 				brick.scale = scale;
 				building1.scale = scale;
-				building2.scale = scale;	
+				building2.scale = scale;*/	
 				break;
 			}	
 		}
