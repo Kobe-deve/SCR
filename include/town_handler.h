@@ -234,6 +234,7 @@ class town : public system_handler
 			{
 				// what building did the player enter? 
 				buildingKey = buildings[i].type;
+				direction = SOUTH;
 				return true;
 			}
 		}

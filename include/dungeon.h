@@ -161,9 +161,16 @@ class dungeon_crawling : public system_handler
 						}
 						else // moving between floors or loading in/out of dungeon crawling 
 						{
-							player->render(main_game->renderer,cameraX+(pY*20*scale)+(pX*20*scale)+30,cameraY-(pX*10*scale)+(pY*10*scale)-70 + moveAnimation);					
+							if(exitBuilding)
+							{
+								player->setAlpha(megaAlpha);
+								player->flip = SDL_FLIP_HORIZONTAL;
+								player->render(main_game->renderer,cameraX+(pY*20*scale)+(pX*20*scale)+30,cameraY-(pX*10*scale)+(pY*10*scale)-70);
+							}
+							else
+								player->render(main_game->renderer,cameraX+(pY*20*scale)+(pX*20*scale)+30,cameraY-(pX*10*scale)+(pY*10*scale)-70 + moveAnimation);					
 							
-							if(!newGame)
+							if(!exitBuilding && !newGame)
 							{
 								switch(up)
 								{
@@ -223,7 +230,7 @@ class dungeon_crawling : public system_handler
 								{
 									player->render(main_game->renderer,cameraX+(partCoords[i][1]*20*scale)+(partCoords[i][0]*20*scale)+30,cameraY-(partCoords[i][0]*10*scale)+(partCoords[i][1]*10*scale)-70+ moveAnimation);
 
-									if(!newGame)
+									if(!exitBuilding && !newGame)
 									{
 										switch(up)
 										{
@@ -234,7 +241,7 @@ class dungeon_crawling : public system_handler
 											moveAnimation+=10;
 											break;
 										}
-									}	
+									}			
 								}
 								break;
 							}
@@ -282,18 +289,24 @@ class dungeon_crawling : public system_handler
 				switchOut = false;
 				loadIn = true;
 				
-				// change floor 
-				if(map[pZ][pY][pX] == '2')
-					pZ++;
-				else if(map[pZ][pY][pX] == '3')
-					pZ--;
-					
-				// clear current enemies 
-				for(int i=0;i<10;i++)
+				if(exitBuilding) // is the player exiting the building
+					endSystemHandler();
+				else // if the player is going to another floor 
 				{
-					movableEnemies[i] = false;
-					coords[i][0] = 0;
-					coords[i][1] = 0;
+				
+					// change floor 
+					if(map[pZ][pY][pX] == '2')
+						pZ++;
+					else if(map[pZ][pY][pX] == '3')
+						pZ--;
+					
+					// clear current enemies 
+					for(int i=0;i<10;i++)
+					{
+						movableEnemies[i] = false;
+						coords[i][0] = 0;
+						coords[i][1] = 0;
+					}
 				}
 			}
 			else if(switchOut)
@@ -391,6 +404,11 @@ class dungeon_crawling : public system_handler
 					switchOut = true;
 					moveAnimation = 0;
 					break;
+					case '5':
+					direction = WEST;
+					exitBuilding = true;
+					switchOut = true;
+					break;
 				}
 			
 				// move enemies after (number on the right) seconds
@@ -483,6 +501,7 @@ class dungeon_crawling : public system_handler
 		
 		bool newGame = false;
 		bool up = true;
+		bool exitBuilding = false;
 		
 		// for rendering specific blocks from the block image 
 		SDL_Rect renderRect;
