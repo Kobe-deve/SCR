@@ -84,6 +84,7 @@ void game_handler::deallocateBackground(int type)
 		break;
 		
 	}
+	delete background_assets;
 }
 
 // loads background assets 
