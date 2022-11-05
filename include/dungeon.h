@@ -2,6 +2,10 @@
 #include "game_handler.h"
 #endif
 
+#ifndef MODELS_DEFINED
+#include "models.h"
+#endif
+
 struct movableEnemy
 {
 	bool alive = true;
@@ -451,8 +455,24 @@ class dungeon_crawling : public system_handler
 			}
 			
 		}
-	
-		void deallocate()
+		
+		// allocating assets back 
+		void allocate()
+		{
+			moverSound = Mix_LoadWAV("resources/music/sounds/moving_floors.wav");
+			
+			// load images 
+			enemy = new image("resources/sprites/dungeon/test_enemy.png",main_game->renderer);
+			player = new image("resources/sprites/dungeon/kid.png",main_game->renderer);
+			b_player = new image("resources/sprites/dungeon/back_kid.png",main_game->renderer);
+			brick = new image("resources/sprites/dungeon/brick.png",main_game->renderer);
+			brick->scale = scale;
+			textbackground = new image("resources/sprites/dungeon/backoftext.png",main_game->renderer);
+			
+		}
+		
+		// deallocating assets when they're not used 
+		void deallocate(bool deleteMap = true)
 		{
 			player->deallocate(); 
 			b_player->deallocate();
@@ -476,8 +496,11 @@ class dungeon_crawling : public system_handler
 			Mix_FreeChunk(moverSound);
 			delete moverSound;
 			
-			delete map;
-			map = nullptr;
+			if(deleteMap)
+			{
+				delete map;
+				map = nullptr;
+			}
 		}
 		bool exitBuilding = false;
 		

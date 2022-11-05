@@ -296,5 +296,6 @@ class stats
 		private:
 		// coordinates for the party portrait sprite 	
 		int portCoords[2];
-	
 };
+
+
