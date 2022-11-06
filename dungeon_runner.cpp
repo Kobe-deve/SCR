@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 			game.currentGame = test_building;
 			game.switchBackground(3);
 		}
-		else if(game.input.state == MENU && (test_building != nullptr || game.currentGame == &test) && test_menu == nullptr) // enter menu 
+		else if(game.input.state == MENU && battle_system == nullptr && (test_building != nullptr || game.currentGame == &test) && test_menu == nullptr) // enter menu 
 		{
 			// deallocate system 
 			if(test_building != nullptr)
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
 			test_menu = new menu_system(&game);
 			game.currentGame = test_menu;
 		}
-		else if(test_menu != nullptr && test_menu->endSystem) // enter menu 
+		else if(test_menu != nullptr && test_menu->endSystem) // enter menu system  
 		{
 			test_menu->endSystem = false;
 			

@@ -409,7 +409,7 @@ class battle : public system_handler
 			if(party[targ].health <= 0)
 			{
 				int x = 0;
-				while(party[x].health <= 0)
+				while(party[x].health <= 0 && x < numParty)
 					x++;
 				targ = x;
 			}
@@ -526,7 +526,7 @@ class battle : public system_handler
 				if(enemySide[targ].health <= 0)
 				{
 					int x = 0;
-					while(enemySide[x].health <= 0)
+					while(enemySide[x].health <= 0 && x < numEnemies-1)
 						x++;
 					targ = x;
 				}

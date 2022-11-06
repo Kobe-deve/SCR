@@ -22,21 +22,6 @@ enum race
 	STRANJER = 5
 };
 
-struct weapon
-{
-	string name;
-	
-	// attack type of weapon 
-	move_types type;
-	
-	// weapon strength 
-	int strength;
-	
-	// durability of the weapon 
-	int health;
-	int max_health;
-};
-
 struct moves
 {
 	move_types type;
@@ -80,11 +65,10 @@ class stats
 				abilities[0] = {SLASH, "Slash"};
 				abilities[1] = {PIERCE, "Pierce"};
 				abilities[2] = {SPELL, "Fusion"};
-				abilities[3] = {SPELL, "Heal"};
 				
 				isEnemy = false;
 				
-				numMoves = 4;
+				numMoves = 3;
 				break;
 				
 				case COBOL:
@@ -254,9 +238,6 @@ class stats
 		
 		int stamina = 10;
 		int maxStamina = 10;
-		
-		// the weapon the character is holding 
-		weapon holding;
 		
 		// regular moves 
 		moves * abilities;
