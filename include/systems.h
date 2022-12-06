@@ -432,7 +432,8 @@ class animatedAsset : public image
 				done = true;
 				counter = 0;
 			}
-			camera.x = counter*camera.w;
+			else
+				camera.x = counter*camera.w;
 		}
 		
 		// resets to initial frame/values
@@ -688,7 +689,7 @@ class game_handler
 		// PUBLIC VARIABLES 
 		SDL_Renderer* renderer = NULL; // window renderer
 	
-		image * background_assets = NULL; // holds background images 
+		image * background_assets = nullptr; // holds background images 
 		
 		// for displaying images 
 		SDL_Surface* images;

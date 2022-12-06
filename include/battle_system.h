@@ -329,7 +329,6 @@ class battle : public system_handler
 					switch(currentChar->abilities[bat_opt].type)
 					{
 						case SLASH:
-						slash.display(main_game->renderer,displayX+595,displayY+125+150*targ);
 						slash.update();
 					
 						if(slash.done == true)
@@ -337,6 +336,9 @@ class battle : public system_handler
 							slash.reset();
 							endTurn = true;
 						}
+						else
+							slash.display(main_game->renderer,displayX+595,displayY+125+150*targ);
+						
 						break;
 						
 						default:
@@ -350,7 +352,6 @@ class battle : public system_handler
 					switch(currentChar->abilities[bat_opt].type)
 					{
 						case SLASH:
-						slash.display(main_game->renderer,displayX+158*targ,displayY+280);
 						slash.update();
 					
 						if(slash.done == true)
@@ -358,6 +359,9 @@ class battle : public system_handler
 							animationOn = false;
 							slash.reset();
 						}
+						else
+							slash.display(main_game->renderer,displayX+158*targ,displayY+280);
+					
 						break;
 						
 						default:
